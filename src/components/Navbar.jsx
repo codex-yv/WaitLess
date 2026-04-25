@@ -156,7 +156,7 @@ export default function Navbar() {
             {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
           <a
-            href="#"
+            href="/login"
             data-testid="navbar-sign-in"
             className={`text-sm px-4 py-2 transition-colors ${
               theme === "light"
@@ -167,7 +167,7 @@ export default function Navbar() {
             Sign in
           </a>
           <a
-            href="#cta"
+            href="/signup"
             data-testid="navbar-get-started"
             className="btn-primary text-sm"
           >
@@ -221,7 +221,7 @@ export default function Navbar() {
                 {l.label}
               </a>
             ))}
-            <a href="#cta" className="btn-primary text-sm self-start">
+            <a href="/signup" className="btn-primary text-sm self-start">
               Get Started
             </a>
           </div>

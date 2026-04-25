@@ -315,6 +315,130 @@ html.dark body {
   }
 }
 
+/* ═══════════════════ LOGIN PAGE STYLES ═══════════════════ */
+
+/* Subtle floating animation for the login card */
+@keyframes login-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.login-card-float {
+  animation: login-float 6s ease-in-out infinite;
+}
+
+/* Slow drifting gradient blobs */
+@keyframes login-blob-drift-1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -20px) scale(1.05);
+  }
+  66% {
+    transform: translate(-20px, 15px) scale(0.95);
+  }
+}
+@keyframes login-blob-drift-2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(-25px, 20px) scale(1.03);
+  }
+  66% {
+    transform: translate(15px, -25px) scale(0.97);
+  }
+}
+@keyframes login-blob-drift-3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(20px, -15px) scale(1.1);
+    opacity: 0.9;
+  }
+}
+.login-blob-1 {
+  animation: login-blob-drift-1 20s ease-in-out infinite;
+}
+.login-blob-2 {
+  animation: login-blob-drift-2 25s ease-in-out infinite;
+}
+.login-blob-3 {
+  animation: login-blob-drift-3 18s ease-in-out infinite;
+}
+
+/* Light beam pulse on top of card (dark mode) */
+@keyframes login-beam-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: translateX(-50%) scaleX(0.8);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateX(-50%) scaleX(1.2);
+  }
+}
+.login-beam {
+  animation: login-beam-pulse 4s ease-in-out infinite;
+}
+
+/* Floating particles */
+@keyframes login-particle-float {
+  0% {
+    transform: translateY(100vh) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-10vh) translateX(40px);
+    opacity: 0;
+  }
+}
+.login-particle {
+  opacity: 0;
+}
+.login-particle-1 {
+  left: 15%;
+  animation: login-particle-float 12s linear infinite;
+  animation-delay: 0s;
+}
+.login-particle-2 {
+  left: 30%;
+  animation: login-particle-float 16s linear infinite;
+  animation-delay: -3s;
+}
+.login-particle-3 {
+  left: 50%;
+  animation: login-particle-float 14s linear infinite;
+  animation-delay: -6s;
+}
+.login-particle-4 {
+  left: 70%;
+  animation: login-particle-float 18s linear infinite;
+  animation-delay: -2s;
+}
+.login-particle-5 {
+  left: 85%;
+  animation: login-particle-float 13s linear infinite;
+  animation-delay: -8s;
+}
+.login-particle-6 {
+  left: 42%;
+  animation: login-particle-float 15s linear infinite;
+  animation-delay: -5s;
+}
+
 .App {
   min-height: 100vh;
   background: #07070a;
