@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ShoppingBag, Coffee, Briefcase, Clock, ArrowRight, Bell } from "lucide-react";
+import { ShoppingBag, Coffee, Briefcase, Clock, ArrowRight, Bell, Home } from "lucide-react";
 import shoppingLight from "@/assets/shopping light.png";
 import shoppingDark from "@/assets/shopping.png";
 import restaurantLight from "@/assets/restaurant_chat light.jpg";
 import restaurantDark from "@/assets/restaurant_chat.jpg";
+import luxury from "@/assets/luxury.png";
 
 const cards = [
   {
@@ -30,11 +31,11 @@ const cards = [
     notification: "Table ready in 3 mins",
   },
   {
-    icon: Briefcase,
-    image: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=800&q=80",
+    icon: Home,
+    image: luxury.src,
     title: "Keep your day moving.",
     description:
-      "Work, travel, or handle tasks — your queue progresses in the background.",
+      "Imagine being able to check, from the comfort of your home, how much time it will take for your turn to arrive at a nearby barber shop or any other service.",
     accent: "from-blue-500 to-cyan-400",
     notification: "Queue #42 in progress",
   },
