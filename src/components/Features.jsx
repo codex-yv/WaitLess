@@ -55,11 +55,10 @@ export default function Features() {
           {/* Scan & Join - spans 2 */}
           <BentoCard className="md:col-span-2 md:row-span-1" testId="feature-scan" theme={theme}>
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6 h-full">
-              <div className={`relative w-28 h-28 shrink-0 rounded-2xl grid place-items-center ${
-                theme === "light"
-                  ? "bg-gradient-to-br from-blue-400/40 to-purple-400/30 border border-gray-300"
-                  : "bg-gradient-to-br from-blue-500/30 to-purple-500/20 border border-white/10"
-              }`}>
+              <div className={`relative w-28 h-28 shrink-0 rounded-2xl grid place-items-center ${theme === "light"
+                ? "bg-gradient-to-br from-blue-400/40 to-purple-400/30 border border-gray-300"
+                : "bg-gradient-to-br from-blue-500/30 to-purple-500/20 border border-white/10"
+                }`}>
                 <QrCode className={`w-12 h-12 ${theme === "light" ? "text-gray-900" : "text-white"}`} strokeWidth={1.4} />
                 <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-teal-400 animate-pulse" />
               </div>
@@ -87,15 +86,14 @@ export default function Features() {
               {["#3 · You", "#4 · Ibrahim", "#5 · Priya"].map((t, i) => (
                 <div
                   key={t}
-                  className={`text-xs px-3 py-1.5 rounded-md border ${
-                    theme === "light"
-                      ? i === 0
-                        ? "bg-blue-100 border-blue-200 text-gray-900"
-                        : "bg-gray-100 border-gray-200 text-gray-600"
-                      : i === 0
-                        ? "bg-white/10 border-white/20 text-white"
-                        : "bg-white/[0.02] border-white/5 text-zinc-500"
-                  }`}
+                  className={`text-xs px-3 py-1.5 rounded-md border ${theme === "light"
+                    ? i === 0
+                      ? "bg-blue-100 border-blue-200 text-gray-900"
+                      : "bg-gray-100 border-gray-200 text-gray-600"
+                    : i === 0
+                      ? "bg-white/10 border-white/20 text-white"
+                      : "bg-white/[0.02] border-white/5 text-zinc-500"
+                    }`}
                 >
                   {t}
                 </div>
@@ -109,13 +107,9 @@ export default function Features() {
               Wait anywhere
             </h3>
             <p className={`mt-2 text-sm ${theme === "light" ? "text-gray-600" : "text-zinc-400"}`}>
-              Grab a coffee, take a walk, finish an errand — we'll find you
+              Grab a coffee, take a walk, finish an errand — we'll notify you
               when it's your turn.
             </p>
-            <div className={`mt-6 flex items-center gap-2 text-xs ${theme === "light" ? "text-gray-600" : "text-zinc-400"}`}>
-              <span className="w-2 h-2 rounded-full bg-teal-400" />
-              Geo-aware smart delay
-            </div>
           </BentoCard>
 
           <BentoCard className="md:col-span-2" testId="feature-alerts" theme={theme}>
@@ -129,6 +123,11 @@ export default function Features() {
                   Tiered notifications — SMS, WhatsApp, push — nudge you at
                   exactly the right moment so you arrive just-in-time.
                 </p>
+                <div className={`mt-6 flex items-center gap-2 text-xs ${theme === "light" ? "text-gray-600" : "text-zinc-400"}`}>
+                  <span className="w-2 h-2 rounded-full bg-teal-400" />
+                  Our geo-aware smart alert system dynamically notifies <br />
+                  users based on their real-time distance from the service location.
+                </div>
               </div>
               <div className="flex-1 w-full mt-2 md:mt-0 grid grid-cols-1 gap-2">
                 {[
@@ -138,11 +137,10 @@ export default function Features() {
                 ].map((a) => (
                   <div
                     key={a.label}
-                    className={`flex items-center gap-3 rounded-xl px-3 py-2.5 ${
-                      theme === "light"
-                        ? "bg-gray-100 border border-gray-200"
-                        : "bg-white/[0.03] border border-white/5"
-                    }`}
+                    className={`flex items-center gap-3 rounded-xl px-3 py-2.5 ${theme === "light"
+                      ? "bg-gray-100 border border-gray-200"
+                      : "bg-white/[0.03] border border-white/5"
+                      }`}
                   >
                     <div
                       className={`w-8 h-8 rounded-lg bg-gradient-to-br ${a.color} grid place-items-center`}
@@ -167,17 +165,16 @@ export default function Features() {
             </p>
             <div className="mt-5 grid grid-cols-3 gap-2 text-center">
               {[
-                { v: "4.9", l: "CSAT" },
-                { v: "-62%", l: "Walk-outs" },
-                { v: "3.2x", l: "Capacity" },
+                { v: "133", l: "Completed" },
+                { v: "13", l: "Cancelled" },
+                { v: "7", l: "Skipped" },
               ].map((s) => (
                 <div
                   key={s.l}
-                  className={`rounded-lg py-2 ${
-                    theme === "light"
-                      ? "bg-gray-100 border border-gray-200"
-                      : "bg-white/[0.03] border border-white/5"
-                  }`}
+                  className={`rounded-lg py-2 ${theme === "light"
+                    ? "bg-gray-100 border border-gray-200"
+                    : "bg-white/[0.03] border border-white/5"
+                    }`}
                 >
                   <div className={`font-satoshi font-bold text-lg ${theme === "light" ? "text-gray-900" : "text-white"}`}>
                     {s.v}
@@ -214,23 +211,20 @@ function BentoCard({ className = "", children, testId, theme }) {
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5, ease: "easeOut" }}
       data-testid={testId}
-      className={`rounded-2xl p-6 md:p-7 group relative overflow-hidden transition-all duration-300 ${
-        theme === "light"
-          ? "bg-white/70 backdrop-blur-lg border border-white/40 shadow-lg hover:shadow-xl hover:bg-white/80 hover:-translate-y-1"
-          : "glass hover:-translate-y-1 hover:bg-white/[0.06]"
-      } ${className}`}
+      className={`rounded-2xl p-6 md:p-7 group relative overflow-hidden transition-all duration-300 ${theme === "light"
+        ? "bg-white/70 backdrop-blur-lg border border-white/40 shadow-lg hover:shadow-xl hover:bg-white/80 hover:-translate-y-1"
+        : "glass hover:-translate-y-1 hover:bg-white/[0.06]"
+        } ${className}`}
     >
       {/* Top edge highlight for light mode - simulates light hitting glass */}
       {theme === "light" && (
         <div className="absolute inset-x-0 top-0 h-[2px] rounded-t-2xl bg-gradient-to-r from-white/80 via-gray-200 to-white/80 pointer-events-none" />
       )}
 
-      <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ${
-        theme === "light" ? "bg-purple-400/10" : ""
-      }`}>
-        <div className={`absolute -top-20 -right-20 w-60 h-60 rounded-full blur-3xl ${
-          theme === "light" ? "bg-purple-400/20" : "bg-purple-500/20"
-        }`} />
+      <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ${theme === "light" ? "bg-purple-400/10" : ""
+        }`}>
+        <div className={`absolute -top-20 -right-20 w-60 h-60 rounded-full blur-3xl ${theme === "light" ? "bg-purple-400/20" : "bg-purple-500/20"
+          }`} />
       </div>
       <div className="relative h-full">{children}</div>
     </motion.div>
