@@ -3,18 +3,37 @@
 import React from "react"
 import { motion } from "framer-motion"
 import { Users, UserPlus, CheckCircle2, AlertTriangle, MoreVertical } from "lucide-react"
-import { LineChart, Line, ResponsiveContainer } from "recharts"
 import { Card } from "@/components/ui/Card"
 import { cn } from "@/lib/utils"
 
-const sparklineData = [
-  { value: 1 },
-  { value: 2 },
-  { value: 1 },
-  { value: 3 },
-  { value: 2 },
-  { value: 4 },
-]
+const sparklineData = [1, 2, 1, 3, 2, 4]
+
+const Sparkline = ({ data, color }: { data: number[]; color: string }) => {
+  const width = 200
+  const height = 64
+  const max = Math.max(...data)
+  const min = Math.min(...data)
+  const range = max - min || 1
+
+  const points = data.map((value, index) => {
+    const x = (index / (data.length - 1)) * width
+    const y = height - ((value - min) / range) * height
+    return `${x},${y}`
+  }).join(' ')
+
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+      <polyline
+        points={points}
+        fill="none"
+        stroke={color}
+        strokeWidth={3}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
 
 const stats = [
   {
@@ -107,25 +126,7 @@ export function StatsGrid() {
             </div>
 
             <div className="h-16 w-full mt-auto px-2 pb-2">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={sparklineData}>
-                  <defs>
-                    <linearGradient id={`color-${i}`} x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor={stat.chartColor} stopOpacity={0.4} />
-                      <stop offset="100%" stopColor={stat.chartColor} stopOpacity={1} />
-                    </linearGradient>
-                  </defs>
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke={`url(#color-${i})`}
-                    strokeWidth={3}
-                    dot={{ r: 3, fill: stat.chartColor, strokeWidth: 0 }}
-                    activeDot={{ r: 6, fill: stat.chartColor, stroke: "#fff", strokeWidth: 2 }}
-                    style={{ filter: `drop-shadow(0px 8px 12px ${stat.chartColor}80)` }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              <Sparkline data={sparklineData} color={stat.chartColor} />
             </div>
           </Card>
         </motion.div>
