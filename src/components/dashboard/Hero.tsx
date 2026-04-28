@@ -61,7 +61,7 @@ export function Hero() {
             <p className="text-gray-200 mb-2 flex items-center gap-2 drop-shadow-md">
               Good Morning <span className="animate-bounce">👋</span>
             </p>
-            <h2 className="text-4xl sm:text-5xl font-extrabold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-cyan-200 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+            <h2 className="text-3xl font-extrabold mb-1.5 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-300 to-blue-300">
               Queue Control Center
             </h2>
             <p className="text-gray-300 text-lg mb-8 drop-shadow-md font-medium">
