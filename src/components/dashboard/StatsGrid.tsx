@@ -22,7 +22,7 @@ const stats = [
     value: "4",
     icon: Users,
     iconColor: "text-purple-400",
-    iconBg: "bg-purple-500/20",
+    iconBg: "bg-purple-500/12",
     chartColor: "#a855f7",
     isLive: false,
   },
@@ -32,7 +32,7 @@ const stats = [
     subtitle: "Live count",
     icon: UserPlus,
     iconColor: "text-blue-400",
-    iconBg: "bg-blue-500/20",
+    iconBg: "bg-blue-500/12",
     chartColor: "#3b82f6",
     isLive: true,
   },
@@ -42,7 +42,7 @@ const stats = [
     subtitle: "50% completion rate",
     icon: CheckCircle2,
     iconColor: "text-green-400",
-    iconBg: "bg-green-500/20",
+    iconBg: "bg-green-500/12",
     chartColor: "#22c55e",
     isLive: false,
   },
@@ -52,7 +52,7 @@ const stats = [
     subtitle: "Action needed",
     icon: AlertTriangle,
     iconColor: "text-red-400",
-    iconBg: "bg-red-500/20",
+    iconBg: "bg-red-500/12",
     chartColor: "#ef4444",
     isLive: false,
   },
@@ -69,10 +69,9 @@ export function StatsGrid() {
           transition={{ duration: 0.5, delay: i * 0.1 }}
         >
           <Card 
-            interactive 
             className="h-full flex flex-col justify-between overflow-hidden relative group p-[0px]"
             glowColor={stat.chartColor}
-            borderGlow={`linear-gradient(135deg, ${stat.chartColor}80, transparent 70%)`}
+            borderGlow={`linear-gradient(135deg, ${stat.chartColor}20, transparent 70%)`}
           >
             
             <div className="p-5 flex flex-col gap-4">
@@ -85,7 +84,7 @@ export function StatsGrid() {
                     <h3 className="text-gray-400 text-sm font-medium">{stat.title}</h3>
                   </div>
                 </div>
-                <button className="text-gray-500 hover:text-white transition-colors">
+                <button className="text-gray-500">
                   <MoreVertical className="w-5 h-5" />
                 </button>
               </div>
@@ -111,8 +110,8 @@ export function StatsGrid() {
                 <LineChart data={sparklineData}>
                   <defs>
                     <linearGradient id={`color-${i}`} x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor={stat.chartColor} stopOpacity={0.4} />
-                      <stop offset="100%" stopColor={stat.chartColor} stopOpacity={1} />
+                      <stop offset="0%" stopColor={stat.chartColor} stopOpacity={0.15} />
+                      <stop offset="100%" stopColor={stat.chartColor} stopOpacity={0.4} />
                     </linearGradient>
                   </defs>
                   <Line
@@ -122,7 +121,7 @@ export function StatsGrid() {
                     strokeWidth={3}
                     dot={{ r: 3, fill: stat.chartColor, strokeWidth: 0 }}
                     activeDot={{ r: 6, fill: stat.chartColor, stroke: "#fff", strokeWidth: 2 }}
-                    style={{ filter: `drop-shadow(0px 8px 12px ${stat.chartColor}80)` }}
+                    style={{ filter: `drop-shadow(0px 6px 10px ${stat.chartColor}30)` }}
                   />
                 </LineChart>
               </ResponsiveContainer>

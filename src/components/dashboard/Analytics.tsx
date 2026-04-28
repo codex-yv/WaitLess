@@ -33,7 +33,7 @@ const SVGCircle = ({ percentage, color }: { percentage: number; color: string })
           fill="none"
           strokeDasharray={circumference}
           strokeLinecap="round"
-          style={{ filter: `drop-shadow(0 0 8px ${color}80)` }}
+          style={{ filter: `drop-shadow(0 0 6px ${color}40)` }}
         />
       </svg>
       <div className="absolute flex items-center justify-center">
@@ -49,14 +49,13 @@ export function AnalyticsGrid() {
       {/* Completion Rate */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}>
         <Card 
-          interactive 
           className="p-5 flex flex-col justify-between h-full"
           glowColor="#3b82f6" 
-          borderGlow="linear-gradient(135deg, #3b82f680, transparent 70%)"
+          borderGlow="linear-gradient(135deg, #3b82f620, transparent 70%)"
         >
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-gray-300 font-medium">Completion Rate</h3>
-            <button className="text-gray-500 hover:text-white transition-colors">
+            <button className="text-gray-500">
               <MoreVertical className="w-5 h-5" />
             </button>
           </div>
@@ -73,14 +72,13 @@ export function AnalyticsGrid() {
       {/* Cancel Rate */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}>
         <Card 
-          interactive 
           className="p-5 flex flex-col justify-between h-full"
           glowColor="#ef4444" 
-          borderGlow="linear-gradient(135deg, #ef444480, transparent 70%)"
+          borderGlow="linear-gradient(135deg, #ef444420, transparent 70%)"
         >
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-gray-300 font-medium">Cancel Rate</h3>
-            <button className="text-gray-500 hover:text-white transition-colors">
+            <button className="text-gray-500">
               <MoreVertical className="w-5 h-5" />
             </button>
           </div>
@@ -97,19 +95,18 @@ export function AnalyticsGrid() {
       {/* Avg Wait Time */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }}>
         <Card 
-          interactive 
           className="p-5 flex flex-col justify-between h-full"
           glowColor="#818cf8" 
-          borderGlow="linear-gradient(135deg, #818cf880, transparent 70%)"
+          borderGlow="linear-gradient(135deg, #818cf820, transparent 70%)"
         >
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-gray-300 font-medium">Avg Wait Time</h3>
-            <button className="text-gray-500 hover:text-white transition-colors">
+            <button className="text-gray-500">
               <MoreVertical className="w-5 h-5" />
             </button>
           </div>
           <div className="flex items-center gap-6 my-auto">
-            <div className="w-16 h-16 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+            <div className="w-16 h-16 rounded-full bg-indigo-500/8 border border-indigo-500/15 flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.12)]">
               <Clock className="w-8 h-8 text-indigo-400" />
             </div>
             <div>
@@ -123,23 +120,22 @@ export function AnalyticsGrid() {
       {/* Total Revenue */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.7 }}>
         <Card 
-          interactive 
           className="p-5 flex flex-col justify-between h-full"
           glowColor="#10b981" 
-          borderGlow="linear-gradient(135deg, #10b98180, transparent 70%)"
+          borderGlow="linear-gradient(135deg, #10b98120, transparent 70%)"
         >
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-gray-300 font-medium">Total Revenue</h3>
-            <button className="text-gray-500 hover:text-white transition-colors">
+            <button className="text-gray-500">
               <MoreVertical className="w-5 h-5" />
             </button>
           </div>
           <div className="flex items-center gap-6 my-auto">
-            <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+            <div className="w-16 h-16 rounded-full bg-emerald-500/8 border border-emerald-500/15 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.12)]">
               <IndianRupee className="w-8 h-8 text-emerald-400" />
             </div>
             <div>
-              <div className="text-3xl font-bold text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.5)]">₹8,450</div>
+              <div className="text-3xl font-bold text-emerald-400 drop-shadow-[0_0_6px_rgba(52,211,153,0.3)]">₹8,450</div>
               <div className="text-sm text-gray-500">today</div>
             </div>
           </div>

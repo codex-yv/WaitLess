@@ -3,13 +3,12 @@ import { cn } from "@/lib/utils"
 
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { interactive?: boolean; wrapperClassName?: string; glowColor?: string; borderGlow?: string }
->(({ className, interactive, wrapperClassName, glowColor, borderGlow, children, ...props }, ref) => (
+  React.HTMLAttributes<HTMLDivElement> & { wrapperClassName?: string; glowColor?: string; borderGlow?: string }
+>(({ className, wrapperClassName, glowColor, borderGlow, children, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      "group relative w-full rounded-2xl z-10",
-      interactive && "transition-all duration-500 hover:-translate-y-1",
+      "group relative w-full rounded-2xl z-10 transition-none",
       wrapperClassName
     )}
     {...props}
@@ -17,7 +16,7 @@ const Card = React.forwardRef<
     {/* Contextual Glowing Border & Outer Drop Shadow */}
     {borderGlow && (
       <div 
-        className="absolute inset-0 rounded-2xl z-[-1] opacity-60 group-hover:opacity-100 transition-opacity duration-500 blur-[2px]"
+        className="absolute inset-0 rounded-2xl z-[-1] opacity-60 blur-[2px]"
         style={{ background: borderGlow }}
       />
     )}
@@ -33,17 +32,11 @@ const Card = React.forwardRef<
     {/* Dynamic Background Glow based on card theme */}
     {glowColor && (
       <div
-        className="absolute inset-[1px] z-[-1] opacity-0 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none rounded-2xl blur-xl"
+        className="absolute inset-[1px] z-[-1] opacity-0 pointer-events-none rounded-2xl blur-xl"
         style={{ background: glowColor }}
       />
     )}
 
-    {/* Light Streak Reflection on Hover */}
-    {interactive && (
-      <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none z-20">
-        <div className="absolute top-0 left-[-150%] w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-45deg] transition-all duration-[1000ms] group-hover:translate-x-[300%] group-hover:opacity-100 opacity-0 ease-in-out" />
-      </div>
-    )}
 
     <div className={cn("relative z-30 h-full w-full", className)}>
       {children}
