@@ -1,0 +1,379 @@
+"use client"
+
+import React, { useState, useEffect } from "react"
+import { Plus, Eye } from "lucide-react"
+import { motion } from "framer-motion"
+import { GlassCard } from "./GlassCard"
+import { FieldInput } from "./FieldInput"
+import { Dropdown } from "./Dropdown"
+import { TimePicker } from "./TimePicker"
+import { PreviewCard } from "./PreviewCard"
+import { FormsList } from "./FormsList"
+import { EmptyState } from "./EmptyState"
+import { cn } from "@/lib/utils"
+
+interface FormField {
+  label: string
+  placeholder: string
+  type?: string
+  options?: string
+}
+
+interface Form {
+  id: string
+  name: string
+  status: "Active" | "Inactive"
+  createdDate: string
+  scanCount: number
+}
+
+export function FormBuilderLayout() {
+  const [isDark, setIsDark] = useState(true)
+  const [mounted, setMounted] = useState(false)
+  const [activeTab, setActiveTab] = useState("Build a Form")
+  const [formTitle, setFormTitle] = useState("")
+  const [selectedCounter, setSelectedCounter] = useState("counter-1")
+  const [openingTime, setOpeningTime] = useState("09:00")
+  const [closingTime, setClosingTime] = useState("18:00")
+  const [fieldType, setFieldType] = useState("text")
+  const [fieldLabel, setFieldLabel] = useState("")
+  const [fieldPlaceholder, setFieldPlaceholder] = useState("")
+  const [fieldOptions, setFieldOptions] = useState("")
+  const [previewFields, setPreviewFields] = useState<FormField[]>([
+    { label: "Full Name", placeholder: "Enter your name", type: "text" }
+  ])
+  const [errorMessage, setErrorMessage] = useState("")
+  const [selectedForm, setSelectedForm] = useState<Form | null>(null)
+  const [savedForms, setSavedForms] = useState<Form[]>([
+    {
+      id: "1",
+      name: "Aadhar Centre",
+      status: "Active",
+      createdDate: "17-04-2026",
+      scanCount: 6
+    }
+  ])
+
+  const tabs = ["Build a Form", "Show all Forms", "Add New Counter"]
+
+  useEffect(() => {
+    setMounted(true)
+    const hasDarkClass = document.documentElement.classList.contains("dark")
+    setIsDark(hasDarkClass)
+
+    const observer = new MutationObserver(() => {
+      const hasDarkClass = document.documentElement.classList.contains("dark")
+      setIsDark(hasDarkClass)
+    })
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"]
+    })
+
+    return () => observer.disconnect()
+  }, [])
+
+  const counterOptions = [
+    { value: "counter-1", label: "Counter 1" },
+    { value: "counter-2", label: "Counter 2" },
+    { value: "counter-3", label: "Counter 3" },
+  ]
+
+  const fieldTypeOptions = [
+    { value: "text", label: "Text Input" },
+    { value: "checkbox", label: "Checkbox" },
+    { value: "dropdown", label: "Dropdown Menu" },
+  ]
+
+  const handleAddField = () => {
+    if (!fieldLabel) {
+      setErrorMessage("Label is required.")
+      return
+    }
+
+    // Check for duplicate label
+    const labelExists = previewFields.some(field => 
+      field.label.toLowerCase() === fieldLabel.toLowerCase()
+    )
+    
+    if (labelExists) {
+      setErrorMessage("A field with this label already exists. Please use a different label.")
+      return
+    }
+    
+    // Validate options for checkbox and dropdown
+    if ((fieldType === "checkbox" || fieldType === "dropdown") && !fieldOptions) {
+      setErrorMessage("Options are required for Checkbox and Dropdown Menu fields.")
+      return
+    }
+    
+    // Validate placeholder for text input
+    if (fieldType === "text" && !fieldPlaceholder) {
+      setErrorMessage("Placeholder is required for Text Input fields.")
+      return
+    }
+    
+    setErrorMessage("")
+    
+    // Determine placeholder based on field type
+    let placeholder = fieldPlaceholder
+    if (fieldType === "dropdown" && fieldOptions) {
+      const options = fieldOptions.split(",").map(opt => opt.trim())
+      placeholder = options[0] || "Select an option"
+    } else if (fieldType === "checkbox") {
+      placeholder = ""
+    }
+    
+    setPreviewFields([...previewFields, { 
+      label: fieldLabel, 
+      placeholder,
+      type: fieldType,
+      options: (fieldType === "checkbox" || fieldType === "dropdown") ? fieldOptions : undefined
+    }])
+    setFieldLabel("")
+    setFieldPlaceholder("")
+    setFieldOptions("")
+    setFieldType("text")
+  }
+
+  const handleDeleteField = (index: number) => {
+    setPreviewFields(previewFields.filter((_, i) => i !== index))
+    setErrorMessage("")
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Tab Navigation - Top Left */}
+      <div className={cn(
+        "relative flex items-center gap-2 p-1.5 backdrop-blur-xl border rounded-full w-max transition-colors duration-300",
+        isDark
+          ? "border-white/10 bg-[#020617]/40 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_15px_35px_rgba(0,0,0,0.5)]"
+          : "border-gray-200 bg-white/70 ring-1 ring-black/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_6px_20px_rgba(0,0,0,0.08)]"
+      )}>
+        {/* Container specular light */}
+        <div className="absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
+        {/* Subtle gradient tint for light mode */}
+        {!isDark && (
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.6),rgba(99,102,241,0.05))] rounded-full opacity-100 pointer-events-none" />
+        )}
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab
+          return (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={cn(
+                "relative px-6 py-2.5 text-sm font-medium rounded-full transition-all duration-300",
+                isActive 
+                  ? "text-white" 
+                  : isDark
+                    ? "text-gray-400 hover:text-white hover:bg-white/[0.08] hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]"
+                    : "text-gray-600 hover:text-gray-900 bg-transparent"
+              )}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="activeTab"
+                  className={cn(
+                    "absolute inset-0 bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-500 rounded-full",
+                    isDark
+                      ? "shadow-[0_0_20px_rgba(139,92,246,0.5),inset_0_1px_rgba(255,255,255,0.4)]"
+                      : "shadow-[0_0_12px_rgba(99,102,241,0.25),inset_0_1px_rgba(255,255,255,0.5)]"
+                  )}
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+              <span className={cn("relative z-10", isActive && "drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]")}>{tab}</span>
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Main Layout - Conditional based on active tab */}
+      {activeTab === "Build a Form" ? (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Panel - Form Controls (30-35% width) */}
+          <div className="lg:col-span-4 space-y-6">
+            <GlassCard className="p-6">
+              {/* Section Title */}
+              <div className="flex items-center gap-2 mb-3">
+                <Plus className="w-5 h-5 text-purple-400" />
+                <h3 className={cn(
+                  "text-lg font-semibold transition-colors duration-300",
+                  isDark ? "text-white" : "text-gray-900"
+                )}>Add Field</h3>
+              </div>
+
+              <div className="space-y-2">
+                {/* Form Title */}
+                <FieldInput
+                  label="Form Title"
+                  placeholder="e.g. Patient Registration Form"
+                  value={formTitle}
+                  className = "py-2 text-[15px]"
+                  onChange={(e) => setFormTitle(e.target.value)}
+                />
+
+                {/* Select Counter */}
+                <Dropdown
+                  label="Select Counter"
+                  options={counterOptions}
+                  value={selectedCounter}
+                  className = "py-2 text-[15px]"
+                  onChange={setSelectedCounter}
+                  placeholder="Select a counter"
+                />
+
+                {/* Opening & Closing Time */}
+                <div className="grid grid-cols-2 gap-4">
+                  <TimePicker
+                    label="Opening Time"
+                    value={openingTime}
+                    className = "py-2 text-[15px]"
+                    onChange={(e) => setOpeningTime(e.target.value)}
+                  />
+                  <TimePicker
+                    label="Closing Time"
+                    value={closingTime}
+                    className = "py-2 text-[15px]"
+                    onChange={(e) => setClosingTime(e.target.value)}
+                  />
+                </div>
+
+                {/* Field Type */}
+                <Dropdown
+                  label="Field Type"
+                  options={fieldTypeOptions}
+                  value={fieldType}
+                  className = "py-2 text-[15px]"
+                  onChange={setFieldType}
+                  placeholder="Select field type"
+                />
+
+                {/* Label Input */}
+                <FieldInput
+                  label="Label"
+                  placeholder="e.g. Full Name"
+                  value={fieldLabel}
+                  className="py-2 text-[15px]"
+                  onChange={(e) => setFieldLabel(e.target.value)}
+                />
+
+                {/* Placeholder Text - Only for Text Input */}
+                {fieldType === "text" && (
+                  <FieldInput
+                    label="Placeholder Text"
+                    placeholder="e.g. Enter your name"
+                    value={fieldPlaceholder}
+                    className = "py-2 text-[15px]"
+                    onChange={(e) => setFieldPlaceholder(e.target.value)}
+                  />
+                )}
+
+                {/* Options - Conditional for Checkbox and Dropdown */}
+                {(fieldType === "checkbox" || fieldType === "dropdown") && (
+                  <FieldInput
+                    label="Options"
+                    placeholder="e.g. Option 1, Option 2, Option 3"
+                    value={fieldOptions}
+                    className = "py-2 text-[15px]"
+                    onChange={(e) => setFieldOptions(e.target.value)}
+                  />
+                )}
+
+                {/* Add Field Button */}
+                <button
+                  onClick={handleAddField}
+                  className="w-full px-6 py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-500 to-blue-500 hover:opacity-90 transition-all duration-200 shadow-[0_4px_15px_rgba(99,102,241,0.4)]"
+                >
+                  + Add Field
+                </button>
+
+                {/* Error Message */}
+                {errorMessage && (
+                  <div className={cn(
+                    "p-3 rounded-xl border transition-colors duration-300",
+                    isDark
+                      ? "border-red-500/30 bg-red-500/10"
+                      : "border-red-200 bg-red-50"
+                  )}>
+                    <p className="text-sm text-red-400">{errorMessage}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Info Box */}
+              <div className={cn(
+                "mt-6 p-4 rounded-xl border transition-colors duration-300",
+                isDark
+                  ? "border-white/10 bg-white/5"
+                  : "border-gray-200 bg-gray-50"
+              )}>
+                <p className={cn(
+                  "text-sm transition-colors duration-300",
+                  isDark ? "text-gray-400" : "text-gray-600"
+                )}>
+                  <span className="font-semibold text-purple-300">💡 Tip:</span> Keep forms short for faster entries. Less is more.
+                </p>
+              </div>
+            </GlassCard>
+          </div>
+
+          {/* Right Panel - Form Preview (65-70% width) */}
+          <div className="lg:col-span-8">
+            <PreviewCard
+              formTitle={formTitle}
+              fields={previewFields}
+              fieldCount={previewFields.length}
+              onDeleteField={handleDeleteField}
+            />
+          </div>
+        </div>
+      ) : activeTab === "Show all Forms" ? (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Panel - Forms List */}
+          <div className="lg:col-span-5">
+            <FormsList
+              forms={savedForms}
+              onFormClick={setSelectedForm}
+              onPreview={(form) => console.log("Preview:", form)}
+              onQR={(form) => console.log("QR:", form)}
+            />
+          </div>
+
+          {/* Right Panel - Empty State or Preview */}
+          <div className="lg:col-span-7">
+            {selectedForm ? (
+              <div className={cn(
+                "p-8 rounded-2xl border transition-colors duration-300",
+                isDark ? "border-white/10 bg-white/5" : "border-gray-200 bg-white"
+              )}>
+                <h2 className={cn(
+                  "text-2xl font-bold mb-4 transition-colors duration-300",
+                  isDark ? "text-white" : "text-gray-900"
+                )}>{selectedForm.name}</h2>
+                <p className={cn(
+                  "transition-colors duration-300",
+                  isDark ? "text-gray-400" : "text-gray-600"
+                )}>Form preview will be displayed here</p>
+              </div>
+            ) : (
+              <EmptyState />
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className={cn(
+          "p-8 rounded-2xl border text-center transition-colors duration-300",
+          isDark ? "border-white/10 bg-white/5" : "border-gray-200 bg-gray-50"
+        )}>
+          <p className={cn(
+            "transition-colors duration-300",
+            isDark ? "text-gray-400" : "text-gray-600"
+          )}>Add New Counter functionality coming soon</p>
+        </div>
+      )}
+    </div>
+  )
+}
