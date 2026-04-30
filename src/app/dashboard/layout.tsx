@@ -8,9 +8,9 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex h-screen bg-[#020617] text-white overflow-hidden relative selection:bg-purple-500/30">
+    <div className="flex h-screen bg-[var(--bg-0)] text-[var(--text-primary)] overflow-hidden relative selection:bg-purple-500/30 transition-colors duration-300">
       {/* Global Background Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.15),transparent_60%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.15),transparent_60%)] pointer-events-none dark:opacity-100 opacity-50" />
 
       <Sidebar />
       

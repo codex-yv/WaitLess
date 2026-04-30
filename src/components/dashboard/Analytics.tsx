@@ -1,11 +1,11 @@
 "use client"
 
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Clock, IndianRupee, MoreVertical } from "lucide-react"
 import { Card } from "@/components/ui/Card"
 
-const SVGCircle = ({ percentage, color }: { percentage: number; color: string }) => {
+const SVGCircle = ({ percentage, color, isDark }: { percentage: number; color: string; isDark: boolean }) => {
   const radius = 36
   const circumference = 2 * Math.PI * radius
   const strokeDashoffset = circumference - (percentage / 100) * circumference
@@ -17,7 +17,7 @@ const SVGCircle = ({ percentage, color }: { percentage: number; color: string })
           cx="50"
           cy="50"
           r={radius}
-          className="stroke-gray-700/50"
+          className={isDark ? "stroke-gray-700/50" : "stroke-gray-300/50"}
           strokeWidth="8"
           fill="none"
         />
@@ -37,13 +37,34 @@ const SVGCircle = ({ percentage, color }: { percentage: number; color: string })
         />
       </svg>
       <div className="absolute flex items-center justify-center">
-        <span className="text-xl font-bold text-white">{percentage}%</span>
+        <span className={`text-xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>{percentage}%</span>
       </div>
     </div>
   )
 }
 
 export function AnalyticsGrid() {
+  const [isDark, setIsDark] = useState(true)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    const hasDarkClass = document.documentElement.classList.contains("dark")
+    setIsDark(hasDarkClass)
+
+    const observer = new MutationObserver(() => {
+      const hasDarkClass = document.documentElement.classList.contains("dark")
+      setIsDark(hasDarkClass)
+    })
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"]
+    })
+
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {/* Completion Rate */}
@@ -52,18 +73,19 @@ export function AnalyticsGrid() {
           className="p-5 flex flex-col justify-between h-full"
           glowColor="#3b82f6" 
           borderGlow="linear-gradient(135deg, #3b82f620, transparent 70%)"
+          lightTint="bg-[linear-gradient(135deg,rgba(59,130,246,0.08),transparent)]"
         >
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-gray-300 font-medium">Completion Rate</h3>
-            <button className="text-gray-500">
+            <h3 className={`font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Completion Rate</h3>
+            <button className={isDark ? "text-gray-500" : "text-gray-400"}>
               <MoreVertical className="w-5 h-5" />
             </button>
           </div>
           <div className="flex items-center gap-6">
-            <SVGCircle percentage={50} color="#3b82f6" />
+            <SVGCircle percentage={50} color="#3b82f6" isDark={isDark} />
             <div>
-              <div className="text-2xl font-bold text-white">2 of 4</div>
-              <div className="text-sm text-gray-500">total</div>
+              <div className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>2 of 4</div>
+              <div className={`text-sm ${isDark ? "text-gray-500" : "text-gray-600"}`}>total</div>
             </div>
           </div>
         </Card>
@@ -75,18 +97,19 @@ export function AnalyticsGrid() {
           className="p-5 flex flex-col justify-between h-full"
           glowColor="#ef4444" 
           borderGlow="linear-gradient(135deg, #ef444420, transparent 70%)"
+          lightTint="bg-[linear-gradient(135deg,rgba(239,68,68,0.08),transparent)]"
         >
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-gray-300 font-medium">Cancel Rate</h3>
-            <button className="text-gray-500">
+            <h3 className={`font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Cancel Rate</h3>
+            <button className={isDark ? "text-gray-500" : "text-gray-400"}>
               <MoreVertical className="w-5 h-5" />
             </button>
           </div>
           <div className="flex items-center gap-6">
-            <SVGCircle percentage={75} color="#ef4444" />
+            <SVGCircle percentage={75} color="#ef4444" isDark={isDark} />
             <div>
-              <div className="text-2xl font-bold text-white">3 of 4</div>
-              <div className="text-sm text-gray-500">total</div>
+              <div className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>3 of 4</div>
+              <div className={`text-sm ${isDark ? "text-gray-500" : "text-gray-600"}`}>total</div>
             </div>
           </div>
         </Card>
@@ -98,10 +121,11 @@ export function AnalyticsGrid() {
           className="p-5 flex flex-col justify-between h-full"
           glowColor="#818cf8" 
           borderGlow="linear-gradient(135deg, #818cf820, transparent 70%)"
+          lightTint="bg-[linear-gradient(135deg,rgba(129,140,248,0.08),transparent)]"
         >
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-gray-300 font-medium">Avg Wait Time</h3>
-            <button className="text-gray-500">
+            <h3 className={`font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Avg Wait Time</h3>
+            <button className={isDark ? "text-gray-500" : "text-gray-400"}>
               <MoreVertical className="w-5 h-5" />
             </button>
           </div>
@@ -110,8 +134,8 @@ export function AnalyticsGrid() {
               <Clock className="w-8 h-8 text-indigo-400" />
             </div>
             <div>
-              <div className="text-3xl font-bold text-white">8 min</div>
-              <div className="text-sm text-gray-500">today's average</div>
+              <div className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>8 min</div>
+              <div className={`text-sm ${isDark ? "text-gray-500" : "text-gray-600"}`}>today's average</div>
             </div>
           </div>
         </Card>
@@ -123,10 +147,11 @@ export function AnalyticsGrid() {
           className="p-5 flex flex-col justify-between h-full"
           glowColor="#10b981" 
           borderGlow="linear-gradient(135deg, #10b98120, transparent 70%)"
+          lightTint="bg-[linear-gradient(135deg,rgba(16,185,129,0.08),transparent)]"
         >
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-gray-300 font-medium">Total Revenue</h3>
-            <button className="text-gray-500">
+            <h3 className={`font-medium ${isDark ? "text-gray-300" : "text-gray-700"}`}>Total Revenue</h3>
+            <button className={isDark ? "text-gray-500" : "text-gray-400"}>
               <MoreVertical className="w-5 h-5" />
             </button>
           </div>
@@ -136,7 +161,7 @@ export function AnalyticsGrid() {
             </div>
             <div>
               <div className="text-3xl font-bold text-emerald-400 drop-shadow-[0_0_6px_rgba(52,211,153,0.3)]">₹8,450</div>
-              <div className="text-sm text-gray-500">today</div>
+              <div className={`text-sm ${isDark ? "text-gray-500" : "text-gray-600"}`}>today</div>
             </div>
           </div>
         </Card>

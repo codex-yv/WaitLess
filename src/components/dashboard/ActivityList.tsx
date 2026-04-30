@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { UserPlus, CheckCircle2, XCircle, UserCog, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -49,16 +49,43 @@ const activities = [
 ]
 
 export function ActivityList() {
+  const [isDark, setIsDark] = useState(true)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    const hasDarkClass = document.documentElement.classList.contains("dark")
+    setIsDark(hasDarkClass)
+
+    const observer = new MutationObserver(() => {
+      const hasDarkClass = document.documentElement.classList.contains("dark")
+      setIsDark(hasDarkClass)
+    })
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"]
+    })
+
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.8 }}
     >
-      <div className="w-full rounded-2xl bg-[#111827] border border-white/8 overflow-hidden">
+      <div className={`w-full rounded-2xl border overflow-hidden transition-colors duration-300 ${
+        isDark 
+          ? "bg-[#111827] border-white/8" 
+          : "bg-white/60 backdrop-blur-xl border-white/40 shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
+      }`}>
         {/* Header */}
-        <div className="px-5 py-4 border-b border-white/8 flex justify-between items-center">
-          <h3 className="text-base font-semibold text-white">Recent Activity</h3>
+        <div className={`px-5 py-4 border-b flex justify-between items-center transition-colors duration-300 ${
+          isDark ? "border-white/8" : "border-gray-200"
+        }`}>
+          <h3 className={`text-base font-semibold ${isDark ? "text-white" : "text-gray-900"}`}>Recent Activity</h3>
           <button className="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-1 group transition-colors">
             View full logs
             <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
@@ -72,7 +99,7 @@ export function ActivityList() {
               key={activity.id}
               className={cn(
                 "flex items-center justify-between px-5 py-3.5 hover:bg-white/[0.02] transition-colors",
-                index !== activities.length - 1 && "border-b border-white/5"
+                index !== activities.length - 1 && (isDark ? "border-b border-white/5" : "border-b border-gray-100")
               )}
             >
               <div className="flex items-center gap-3">
@@ -80,13 +107,13 @@ export function ActivityList() {
                   <activity.icon className={cn("w-4 h-4", activity.iconColor)} />
                 </div>
                 <div className="text-sm">
-                  <span className="text-gray-200 font-medium">{activity.title}</span>{" "}
-                  <span className="text-gray-400">{activity.action}</span>
+                  <span className={`font-medium ${isDark ? "text-gray-200" : "text-gray-900"}`}>{activity.title}</span>{" "}
+                  <span className={isDark ? "text-gray-400" : "text-gray-600"}>{activity.action}</span>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                <span className="text-xs text-gray-500">{activity.time}</span>
+                <span className={`text-xs ${isDark ? "text-gray-500" : "text-gray-400"}`}>{activity.time}</span>
                 <span className={cn("w-2 h-2 rounded-full", activity.dot)} />
               </div>
             </div>
