@@ -5,37 +5,37 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 interface ThemeContextType {
   isDark: boolean
   mounted: boolean
+  toggleTheme: () => void
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  isDark: true,
-  mounted: false
+  isDark: false,
+  mounted: false,
+  toggleTheme: () => {}
 })
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [isDark, setIsDark] = useState(true)
+  const [isDark, setIsDark] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
     const hasDarkClass = document.documentElement.classList.contains("dark")
     setIsDark(hasDarkClass)
-
-    const observer = new MutationObserver(() => {
-      const hasDarkClass = document.documentElement.classList.contains("dark")
-      setIsDark(hasDarkClass)
-    })
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"]
-    })
-
-    return () => observer.disconnect()
   }, [])
 
+  const toggleTheme = () => {
+    const newIsDark = !isDark
+    setIsDark(newIsDark)
+    if (newIsDark) {
+      document.documentElement.classList.add("dark")
+    } else {
+      document.documentElement.classList.remove("dark")
+    }
+  }
+
   return (
-    <ThemeContext.Provider value={{ isDark, mounted }}>
+    <ThemeContext.Provider value={{ isDark, mounted, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   )
