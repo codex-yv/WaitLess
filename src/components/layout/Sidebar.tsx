@@ -8,7 +8,7 @@ import Link from "next/link"
 
 const navItems = [
   { name: "Dashboard", icon: Home, href: "/dashboard" },
-  { name: "Live Queue", icon: Users, href: "/dashboard/queue" },
+  { name: "Live Queue", icon: Users, href: "/dashboard/live-queue" },
   { name: "Form Builder", icon: ClipboardList, href: "/dashboard/forms" },
   { name: "Team", icon: Users, href: "/dashboard/team" },
 ]
