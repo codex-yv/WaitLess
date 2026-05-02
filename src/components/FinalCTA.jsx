@@ -131,6 +131,7 @@ export default function FinalCTA() {
                   placeholder="you@company.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  suppressHydrationWarning
                   className={`flex-1 bg-transparent py-3 text-sm outline-none ${
                     theme === "light" ? "placeholder:text-gray-400" : "placeholder:text-zinc-500"
                   }`}

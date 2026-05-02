@@ -6,11 +6,27 @@ import { Settings, ChevronDown, Sun, Moon } from "lucide-react"
 export function Header() {
   const [theme, setTheme] = useState("dark")
   const [mounted, setMounted] = useState(false)
+  const [userData, setUserData] = useState<{ email: string; picture: string | null } | null>(null)
 
   // Prevent hydration mismatch
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Load user data from localStorage
+  useEffect(() => {
+    if (!mounted) return
+
+    const tempData = localStorage.getItem('temp_data')
+    if (tempData) {
+      try {
+        const parsed = JSON.parse(tempData)
+        setUserData(parsed)
+      } catch (e) {
+        console.error('Error parsing temp_data:', e)
+      }
+    }
+  }, [mounted])
 
   // Theme management
   useEffect(() => {
@@ -53,13 +69,29 @@ export function Header() {
 
       <div className="flex items-center gap-3">
         {/* Email Pill */}
-        <div className={`flex items-center gap-2 cursor-pointer px-4 py-2 rounded-xl border hover:border-opacity-20 transition-all duration-200 ${
-          isDark 
-            ? "bg-[#161b27] border-white/10 hover:border-white/20" 
+        <div className={`flex items-center gap-2 cursor-pointer px-4 py-1 rounded-xl border hover:border-opacity-20 transition-all duration-200 ${
+          isDark
+            ? "bg-[#161b27] border-white/10 hover:border-white/20"
             : "bg-gray-100 border-gray-300 hover:border-gray-400"
         }`}>
+          {/* Profile Avatar */}
+          {userData?.picture ? (
+            <img
+              src={userData.picture}
+              alt="Profile"
+              className="w-8 h-8 rounded-full object-cover"
+            />
+          ) : (
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+              isDark
+                ? "bg-gradient-to-br from-indigo-500 to-purple-600 text-white"
+                : "bg-gradient-to-br from-indigo-500 to-purple-600 text-white"
+            }`}>
+              {userData?.email?.charAt(0).toUpperCase() || 'A'}
+            </div>
+          )}
           <span className={`text-sm font-medium tracking-wide ${isDark ? "text-white/90" : "text-gray-700"}`}>
-            admin@waitless.com
+            {userData?.email || 'admin@waitless.com'}
           </span>
           <ChevronDown className={`w-4 h-4 ${isDark ? "text-white/50" : "text-gray-500"}`} />
         </div>

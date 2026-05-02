@@ -283,6 +283,7 @@ export default function AdminSection() {
                       {feature.actions.map((action, i) => (
                         <button
                           key={i}
+                          suppressHydrationWarning
                           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                             i === 0
                               ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-lg"

@@ -71,7 +71,9 @@ class WebSocketManager {
         };
 
         this.socket.onerror = (error) => {
-            console.error('[WS] Connection error:', error);
+            // WebSocket error events often have empty error objects
+            // The actual error details are usually in the onclose event
+            console.warn('[WS] Connection error occurred. Will attempt to reconnect if enabled.');
             this._emit('error', error);
         };
     }

@@ -4,8 +4,11 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Zap, Sun, Moon, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { login } from "@/api/api-functions/auth";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [mounted, setMounted] = useState(false);
   const [email, setEmail] = useState("");
@@ -15,6 +18,8 @@ export default function LoginPage() {
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [hoveredBtn, setHoveredBtn] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const emailRef = useRef<HTMLInputElement>(null);
 
   // Hydration-safe mount
@@ -62,6 +67,47 @@ export default function LoginPage() {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
+    }
+  };
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setErrorMessage("Please enter both email and password");
+      return;
+    }
+
+    setIsLoading(true);
+    setErrorMessage("");
+
+    try {
+      const response = await login(email, password);
+
+      if (response.status === false) {
+        setErrorMessage(response.message || "Login failed");
+      } else {
+        // Save access_token
+        localStorage.setItem('access_token', response.access_token);
+
+        // Save admin_id
+        if (response.admin_id) {
+          localStorage.setItem('admin_id', response.admin_id);
+        }
+
+        // Save email and picture as temp_data
+        const tempData = {
+          email: response.email,
+          picture: response.picture
+        };
+        localStorage.setItem('temp_data', JSON.stringify(tempData));
+
+        // Redirect to dashboard
+        router.push('/dashboard');
+      }
+    } catch (error) {
+      setErrorMessage("An error occurred during login. Please try again.");
+      console.error('Login error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -444,6 +490,17 @@ export default function LoginPage() {
             </span>
           </motion.div>
 
+          {/* ─── Error Message ─── */}
+          {errorMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center"
+            >
+              {errorMessage}
+            </motion.div>
+          )}
+
           {/* ─── Sign In Button ─── */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -454,9 +511,11 @@ export default function LoginPage() {
             <button
               data-testid="login-submit-btn"
               type="button"
-              className="btn-primary w-full justify-center"
+              onClick={handleLogin}
+              disabled={isLoading}
+              className="btn-primary w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Sign in
+              {isLoading ? "Signing in..." : "Sign in"}
             </button>
           </motion.div>
 

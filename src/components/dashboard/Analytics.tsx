@@ -5,6 +5,11 @@ import { motion } from "framer-motion"
 import { Clock, IndianRupee, MoreVertical } from "lucide-react"
 import { Card } from "@/components/ui/Card"
 
+interface AnalyticsGridProps {
+  dashboardData: any
+  loading: boolean
+}
+
 const SVGCircle = ({ percentage, color, isDark }: { percentage: number; color: string; isDark: boolean }) => {
   const radius = 36
   const circumference = 2 * Math.PI * radius
@@ -43,7 +48,7 @@ const SVGCircle = ({ percentage, color, isDark }: { percentage: number; color: s
   )
 }
 
-export function AnalyticsGrid() {
+export function AnalyticsGrid({ dashboardData, loading }: AnalyticsGridProps) {
   const [isDark, setIsDark] = useState(true)
   const [mounted, setMounted] = useState(false)
 
@@ -65,6 +70,33 @@ export function AnalyticsGrid() {
     return () => observer.disconnect()
   }, [])
 
+  // Calculate completion and cancel rates from dashboard data
+  const analytics = React.useMemo(() => {
+    if (!dashboardData || loading) {
+      // Return dummy data when loading or no data
+      return {
+        completionRate: 50,
+        completionText: "2 of 4",
+        cancelRate: 75,
+        cancelText: "3 of 4"
+      }
+    }
+
+    const total = dashboardData.total || 0
+    const checked = dashboardData.checked || 0
+    const canceled = dashboardData.canceled || 0
+
+    const completionRate = total > 0 ? Math.round((checked / total) * 100) : 0
+    const cancelRate = total > 0 ? Math.round((canceled / total) * 100) : 0
+
+    return {
+      completionRate,
+      completionText: `${checked} of ${total}`,
+      cancelRate,
+      cancelText: `${canceled} of ${total}`
+    }
+  }, [dashboardData, loading])
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {/* Completion Rate */}
@@ -82,9 +114,9 @@ export function AnalyticsGrid() {
             </button>
           </div>
           <div className="flex items-center gap-6">
-            <SVGCircle percentage={50} color="#3b82f6" isDark={isDark} />
+            <SVGCircle percentage={analytics.completionRate} color="#3b82f6" isDark={isDark} />
             <div>
-              <div className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>2 of 4</div>
+              <div className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>{analytics.completionText}</div>
               <div className={`text-sm ${isDark ? "text-gray-500" : "text-gray-600"}`}>total</div>
             </div>
           </div>
@@ -106,9 +138,9 @@ export function AnalyticsGrid() {
             </button>
           </div>
           <div className="flex items-center gap-6">
-            <SVGCircle percentage={75} color="#ef4444" isDark={isDark} />
+            <SVGCircle percentage={analytics.cancelRate} color="#ef4444" isDark={isDark} />
             <div>
-              <div className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>3 of 4</div>
+              <div className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>{analytics.cancelText}</div>
               <div className={`text-sm ${isDark ? "text-gray-500" : "text-gray-600"}`}>total</div>
             </div>
           </div>

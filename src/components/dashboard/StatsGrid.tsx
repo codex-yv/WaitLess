@@ -16,55 +16,122 @@ const sparklineData = [
   { value: 4 },
 ]
 
-const stats = [
-  {
-    title: "Total Clients",
-    value: "4",
-    icon: Users,
-    iconColor: "text-purple-400",
-    iconBg: "bg-purple-500/12",
-    chartColor: "#a855f7",
-    lightTint: "bg-[linear-gradient(135deg,rgba(139,92,246,0.08),transparent)]",
-    isLive: false,
-  },
-  {
-    title: "Waiting",
-    value: "1",
-    subtitle: "Live count",
-    icon: UserPlus,
-    iconColor: "text-blue-400",
-    iconBg: "bg-blue-500/12",
-    chartColor: "#3b82f6",
-    lightTint: "bg-[linear-gradient(135deg,rgba(59,130,246,0.08),transparent)]",
-    isLive: true,
-  },
-  {
-    title: "Completed",
-    value: "2",
-    subtitle: "50% completion rate",
-    icon: CheckCircle2,
-    iconColor: "text-green-400",
-    iconBg: "bg-green-500/12",
-    chartColor: "#22c55e",
-    lightTint: "bg-[linear-gradient(135deg,rgba(34,197,94,0.08),transparent)]",
-    isLive: false,
-  },
-  {
-    title: "Canceled",
-    value: "3",
-    subtitle: "Action needed",
-    icon: AlertTriangle,
-    iconColor: "text-red-400",
-    iconBg: "bg-red-500/12",
-    chartColor: "#ef4444",
-    lightTint: "bg-[linear-gradient(135deg,rgba(239,68,68,0.08),transparent)]",
-    isLive: false,
-  },
-]
+interface StatsGridProps {
+  dashboardData: any
+  loading: boolean
+}
 
-export function StatsGrid() {
+export function StatsGrid({ dashboardData, loading }: StatsGridProps) {
   const [isDark, setIsDark] = useState(true)
   const [mounted, setMounted] = useState(false)
+
+  // Calculate stats from dashboard data
+  const stats = React.useMemo(() => {
+    if (!dashboardData || loading) {
+      // Return dummy data when loading or no data
+      return [
+        {
+          title: "Total Clients",
+          value: "4",
+          icon: Users,
+          iconColor: "text-purple-400",
+          iconBg: "bg-purple-500/12",
+          chartColor: "#a855f7",
+          lightTint: "bg-[linear-gradient(135deg,rgba(139,92,246,0.08),transparent)]",
+          isLive: false,
+        },
+        {
+          title: "Waiting",
+          value: "1",
+          subtitle: "Live count",
+          icon: UserPlus,
+          iconColor: "text-blue-400",
+          iconBg: "bg-blue-500/12",
+          chartColor: "#3b82f6",
+          lightTint: "bg-[linear-gradient(135deg,rgba(59,130,246,0.08),transparent)]",
+          isLive: true,
+        },
+        {
+          title: "Completed",
+          value: "2",
+          subtitle: "50% completion rate",
+          icon: CheckCircle2,
+          iconColor: "text-green-400",
+          iconBg: "bg-green-500/12",
+          chartColor: "#22c55e",
+          lightTint: "bg-[linear-gradient(135deg,rgba(34,197,94,0.08),transparent)]",
+          isLive: false,
+        },
+        {
+          title: "Canceled",
+          value: "3",
+          subtitle: "Action needed",
+          icon: AlertTriangle,
+          iconColor: "text-red-400",
+          iconBg: "bg-red-500/12",
+          chartColor: "#ef4444",
+          lightTint: "bg-[linear-gradient(135deg,rgba(239,68,68,0.08),transparent)]",
+          isLive: false,
+        },
+      ]
+    }
+
+    const total = dashboardData.total || 0
+    const checked = dashboardData.checked || 0
+    const waiting = dashboardData.waiting || 0
+    const canceled = dashboardData.canceled || 0
+
+    // Calculate completion rate
+    const completionRate = total > 0 ? Math.round((checked / total) * 100) : 0
+    // Calculate cancel rate
+    const cancelRate = total > 0 ? Math.round((canceled / total) * 100) : 0
+
+    return [
+      {
+        title: "Total Clients",
+        value: total.toString(),
+        icon: Users,
+        iconColor: "text-purple-400",
+        iconBg: "bg-purple-500/12",
+        chartColor: "#a855f7",
+        lightTint: "bg-[linear-gradient(135deg,rgba(139,92,246,0.08),transparent)]",
+        isLive: false,
+      },
+      {
+        title: "Waiting",
+        value: waiting.toString(),
+        subtitle: "Live count",
+        icon: UserPlus,
+        iconColor: "text-blue-400",
+        iconBg: "bg-blue-500/12",
+        chartColor: "#3b82f6",
+        lightTint: "bg-[linear-gradient(135deg,rgba(59,130,246,0.08),transparent)]",
+        isLive: true,
+      },
+      {
+        title: "Completed",
+        value: checked.toString(),
+        subtitle: `${completionRate}% completion rate`,
+        icon: CheckCircle2,
+        iconColor: "text-green-400",
+        iconBg: "bg-green-500/12",
+        chartColor: "#22c55e",
+        lightTint: "bg-[linear-gradient(135deg,rgba(34,197,94,0.08),transparent)]",
+        isLive: false,
+      },
+      {
+        title: "Canceled",
+        value: canceled.toString(),
+        subtitle: `${cancelRate}% cancel rate`,
+        icon: AlertTriangle,
+        iconColor: "text-red-400",
+        iconBg: "bg-red-500/12",
+        chartColor: "#ef4444",
+        lightTint: "bg-[linear-gradient(135deg,rgba(239,68,68,0.08),transparent)]",
+        isLive: false,
+      },
+    ]
+  }, [dashboardData, loading])
 
   useEffect(() => {
     setMounted(true)
