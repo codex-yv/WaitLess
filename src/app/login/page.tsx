@@ -5,9 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Zap, Sun, Moon, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { login } from "@/api/api-functions/auth";
+import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
+import { login, googleLogin } from "@/api/api-functions/auth";
+import { GOOGLE_CLIENT_ID } from "@/config/backend";
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter();
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [mounted, setMounted] = useState(false);
@@ -108,6 +110,55 @@ export default function LoginPage() {
       console.error('Login error:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGoogleAuth = GOOGLE_CLIENT_ID ? useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setIsLoading(true);
+      setErrorMessage("");
+      try {
+        const result = await googleLogin(tokenResponse.access_token);
+        if (result.status) {
+          // Save access_token
+          localStorage.setItem('access_token', result.access_token);
+
+          // Save admin_id
+          if (result.admin_id) {
+            localStorage.setItem('admin_id', result.admin_id);
+          }
+
+          // Save email and picture as temp_data
+          const tempData = {
+            email: result.email,
+            picture: result.picture
+          };
+          localStorage.setItem('temp_data', JSON.stringify(tempData));
+
+          // Redirect to dashboard
+          router.push('/dashboard');
+        } else {
+          setErrorMessage(result.message || "Google login failed");
+        }
+      } catch (err) {
+        setErrorMessage("Failed during Google Auth.");
+        console.error('Google auth error:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    onError: () => {
+      setErrorMessage("Google Auth failed or was cancelled.");
+    }
+  }) : null;
+
+  const handleGoogleButtonClick = () => {
+    if (!GOOGLE_CLIENT_ID) {
+      setErrorMessage("Google Client ID is not configured. Please set NEXT_PUBLIC_GOOGLE_CLIENT_ID environment variable.");
+      return;
+    }
+    if (handleGoogleAuth) {
+      handleGoogleAuth();
     }
   };
 
@@ -559,13 +610,15 @@ export default function LoginPage() {
             {/* Google */}
             <button
               data-testid="login-google-btn"
+              onClick={handleGoogleButtonClick}
+              disabled={isLoading}
               onMouseEnter={() => setHoveredBtn("google")}
               onMouseLeave={() => setHoveredBtn(null)}
               className={`group relative w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-300 ${
                 isDark
                   ? "bg-white/[0.04] border border-white/[0.08] text-zinc-300 hover:bg-white/[0.08] hover:border-white/[0.15] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)]"
                   : "bg-white/80 border border-gray-200 text-gray-700 hover:bg-white hover:border-gray-300 hover:text-gray-900 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
-              }`}
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {/* Google Icon */}
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -642,5 +695,17 @@ export default function LoginPage() {
         </Link>
       </motion.div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  if (!GOOGLE_CLIENT_ID) {
+    console.warn("Google Client ID is not configured. Please set NEXT_PUBLIC_GOOGLE_CLIENT_ID in your environment variables.");
+  }
+
+  return (
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <LoginPageContent />
+    </GoogleOAuthProvider>
   );
 }

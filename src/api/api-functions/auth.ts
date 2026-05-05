@@ -45,13 +45,18 @@ export const login = async (email, password) => {
  * Signup function for new admin users
  * @param {string} name - User name
  * @param {string} email - User email
+ * @param {string} picture - User picture
  * @param {string} password - User password
  * @param {string} phone - User phone number
  * @param {string} occupation - User occupation
+ * @param {string} org_type - Organization type (optional)
+ * @param {string} org_name - Organization name (optional)
+ * @param {string} address - Organization address (optional)
  * @returns {Promise<Object>} Response with message, status, access_token, token_type
  */
-export const signup = async (name, email, password, phone, occupation) => {
+export const signup = async (name: string, email: string, picture: string, password: string, phone: string, occupation: string, org_type: string | null = null, org_name: string | null = null, address: string | null = null) => {
     try {
+        // console.log("Signup function called with:", { name, email, picture, password, phone, occupation, org_type, org_name, address });
         const response = await fetch(`${BACKEND_URL}/${authEndpoints.signup}`, {
             method: 'POST',
             headers: {
@@ -60,9 +65,13 @@ export const signup = async (name, email, password, phone, occupation) => {
             body: JSON.stringify({
                 name: name,
                 email: email,
+                picture: picture,
                 password: password,
                 phone: phone,
-                occupation: occupation
+                occupation: occupation,
+                org_type: org_type,
+                org_name: org_name,
+                address: address
             })
         });
 

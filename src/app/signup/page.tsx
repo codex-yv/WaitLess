@@ -5,6 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Zap, Sun, Moon, Bell, MapPin, Clock, Loader2, ChevronDown, Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
+import { googleVerify, signup } from "@/api/api-functions/auth";
+import { GOOGLE_CLIENT_ID } from "@/config/backend";
 
 // @ts-ignore
 import signupLight from "@/assets/signup-light.png";
@@ -13,16 +17,48 @@ import signupDark from "@/assets/signup-dark.png";
 
 const orgTypes = ["Hospital", "Saloon", "Bank", "Government Centers", "Others"];
 
-export default function SignupPage() {
+// Shared Floating Input Component - moved outside to prevent re-rendering on every keystroke
+const FloatingInput = ({ label, value, onChange, type = "text", placeholder = "", disabled = false, isDark }: any) => (
+  <div className={`relative px-4 py-3 rounded-xl transition-all duration-300 backdrop-blur-lg border outline-none group focus-within:shadow-[0_0_20px_rgba(59,130,246,0.15)] ${
+    isDark
+      ? "bg-white/5 border-white/10 focus-within:border-blue-400/50 hover:bg-white/[0.07]"
+      : "bg-white/60 border-white/40 focus-within:border-blue-400 hover:bg-white/80"
+  } ${disabled ? "opacity-60" : ""}`}>
+    <label className={`block text-[11px] font-medium tracking-wide mb-1 transition-colors ${
+      isDark ? "text-blue-400" : "text-blue-600"
+    }`}>
+      {label}
+    </label>
+    <input
+      type={type}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      disabled={disabled}
+      className={`w-full bg-transparent text-sm outline-none font-medium placeholder:font-normal transition-colors ${
+        isDark ? "text-white placeholder:text-zinc-600" : "text-gray-900 placeholder:text-gray-400"
+      } ${disabled ? "cursor-not-allowed" : ""}`}
+    />
+  </div>
+);
+
+function SignupPageContent() {
+  const router = useRouter();
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [mounted, setMounted] = useState(false);
 
   // Onboarding State
   const [step, setStep] = useState(0);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [googlePicture, setGooglePicture] = useState("");
+  const [isFromGoogle, setIsFromGoogle] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     fullName: "",
+    password: "",
+    phone: "",
     occupation: "",
     orgType: "",
     orgName: "",
@@ -65,42 +101,127 @@ export default function SignupPage() {
     document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
 
-  const handleGoogleClick = () => {
-    setIsGoogleLoading(true);
-    setTimeout(() => {
+  // Reset isFromGoogle when going back to step 0
+  const handleBack = () => {
+    if (step > 0) {
+      setStep(step - 1);
+      if (step === 1) {
+        setIsFromGoogle(false);
+        setErrorMessage("");
+      }
+    } else {
+      window.location.href = '/';
+    }
+  };
+
+  const handleGoogleAuth = GOOGLE_CLIENT_ID ? useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setIsGoogleLoading(true);
+      setErrorMessage("");
+      try {
+        const result = await googleVerify(tokenResponse.access_token);
+        if (result.status) {
+          if (result.exists) {
+            setErrorMessage("An account with this email already exists. Please sign in.");
+            setIsFromGoogle(false);
+          } else {
+            // Store profile picture from GoogleVerifyResponse
+            if (result.picture) {
+              setGooglePicture(result.picture);
+              localStorage.setItem('google_picture', result.picture);
+            }
+            // Prefill form with Google data
+            setFormData(prev => ({
+              ...prev,
+              email: result.email || "",
+              fullName: result.name || ""
+            }));
+            setIsFromGoogle(true);
+            setStep(1);
+          }
+        } else {
+          setErrorMessage(result.message || "Google verification failed");
+          setIsFromGoogle(false);
+        }
+      } catch (err) {
+        setErrorMessage("Failed during Google verification.");
+        setIsFromGoogle(false);
+        console.error('Google verify error:', err);
+      } finally {
+        setIsGoogleLoading(false);
+      }
+    },
+    onError: () => {
+      setErrorMessage("Google Auth failed or was cancelled.");
+      setIsFromGoogle(false);
       setIsGoogleLoading(false);
-      setFormData(prev => ({ ...prev, email: "user@waitless.com" }));
-      setStep(1);
-    }, 1200);
+    }
+  }) : null;
+
+  const handleGoogleClick = () => {
+    if (!GOOGLE_CLIENT_ID) {
+      setErrorMessage("Google Client ID is not configured.");
+      return;
+    }
+    if (handleGoogleAuth) {
+      handleGoogleAuth();
+    }
+  };
+
+  const handleFinishSetup = async () => {
+    if (!formData.agreed || !formData.orgName || !formData.orgType) {
+      setErrorMessage("Please fill in all required fields and agree to the terms.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage("");
+
+    try {
+      const result = await signup(
+        formData.fullName,
+        formData.email,
+        googlePicture,
+        isFromGoogle ? "" : formData.password, // password is empty for Google signup
+        formData.phone,
+        formData.occupation,
+        formData.orgType,
+        formData.orgName,
+        formData.orgAddress
+      );
+
+      if (result.status) {
+        // Save access_token
+        localStorage.setItem('access_token', result.access_token);
+
+        // Save admin_id
+        if (result.admin_id) {
+          localStorage.setItem('admin_id', result.admin_id);
+        }
+
+        // Save email and picture as temp_data
+        const tempData = {
+          email: result.email,
+          picture: result.picture
+        };
+        localStorage.setItem('temp_data', JSON.stringify(tempData));
+
+        // Redirect to dashboard
+        router.push('/dashboard');
+      } else {
+        setErrorMessage(result.message || "Signup failed");
+      }
+    } catch (err) {
+      setErrorMessage("Failed during signup.");
+      console.error('Signup error:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!mounted) return null;
 
   const isDark = theme === "dark";
-
-  // Shared Floating Input Component
-  const FloatingInput = ({ label, value, onChange, type = "text", placeholder = "" }: any) => (
-    <div className={`relative px-4 py-3 rounded-xl transition-all duration-300 backdrop-blur-lg border outline-none group focus-within:shadow-[0_0_20px_rgba(59,130,246,0.15)] ${
-      isDark 
-        ? "bg-white/5 border-white/10 focus-within:border-blue-400/50 hover:bg-white/[0.07]" 
-        : "bg-white/60 border-white/40 focus-within:border-blue-400 hover:bg-white/80"
-    }`}>
-      <label className={`block text-[11px] font-medium tracking-wide mb-1 transition-colors ${
-        isDark ? "text-blue-400" : "text-blue-600"
-      }`}>
-        {label}
-      </label>
-      <input 
-        type={type} 
-        value={value} 
-        onChange={onChange} 
-        placeholder={placeholder}
-        className={`w-full bg-transparent text-sm outline-none font-medium placeholder:font-normal transition-colors ${
-          isDark ? "text-white placeholder:text-zinc-600" : "text-gray-900 placeholder:text-gray-400"
-        }`} 
-      />
-    </div>
-  );
 
   return (
     <div className={`relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden transition-colors duration-500 ${
@@ -108,8 +229,8 @@ export default function SignupPage() {
     }`}>
       {/* ─── Back Button & Theme Toggle (Top Nav) ─── */}
       <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-50">
-        <button 
-          onClick={() => step > 0 ? setStep(step - 1) : window.location.href = '/'}
+        <button
+          onClick={handleBack}
           className={`flex items-center gap-2 group transition-all duration-300 ${
             isDark ? "text-zinc-400 hover:text-white" : "text-gray-500 hover:text-gray-900"
           }`}
@@ -259,6 +380,17 @@ export default function SignupPage() {
                   <p className={`text-sm ${isDark ? "text-zinc-400" : "text-gray-500"}`}>Skip the wait. Save time for what matters.</p>
                 </div>
 
+                {/* Error Message */}
+                {errorMessage && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center"
+                  >
+                    {errorMessage}
+                  </motion.div>
+                )}
+
                 <div className="relative w-full aspect-[4/3] bg-transparent opacity-95 mb-3 rounded-lg overflow-hidden group">
                   <div className={`absolute inset-0 bg-gradient-to-tr transition-opacity duration-700 ${isDark ? "from-blue-500/5 to-purple-500/5 opacity-40" : "from-blue-50/50 to-purple-50/50 opacity-30"}`} />
                   <div className="absolute inset-0 flex items-center justify-center p-2 shadow-none">
@@ -337,24 +469,57 @@ export default function SignupPage() {
                   </p>
                 </div>
 
+                {/* Error Message */}
+                {errorMessage && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center"
+                  >
+                    {errorMessage}
+                  </motion.div>
+                )}
+
                 <div className="space-y-4 mb-8">
-                  <FloatingInput 
-                    label="Email Address" 
+                  <FloatingInput
+                    label="Email Address"
                     type="email"
-                    value={formData.email} 
-                    onChange={(e: any) => setFormData({...formData, email: e.target.value})} 
+                    value={formData.email}
+                    onChange={(e: any) => setFormData({...formData, email: e.target.value})}
+                    disabled={isFromGoogle}
+                    isDark={isDark}
                   />
-                  <FloatingInput 
-                    label="Full Name" 
+                  <FloatingInput
+                    label="Full Name"
                     placeholder="E.g. Alex Smith"
-                    value={formData.fullName} 
-                    onChange={(e: any) => setFormData({...formData, fullName: e.target.value})} 
+                    value={formData.fullName}
+                    onChange={(e: any) => setFormData({...formData, fullName: e.target.value})}
+                    isDark={isDark}
                   />
-                  <FloatingInput 
-                    label="Occupation / Role" 
+                  {isFromGoogle && (
+                    <FloatingInput
+                      label="Password"
+                      type="password"
+                      placeholder="Create a password"
+                      value={formData.password}
+                      onChange={(e: any) => setFormData({...formData, password: e.target.value})}
+                      isDark={isDark}
+                    />
+                  )}
+                  <FloatingInput
+                    label="Phone Number"
+                    type="tel"
+                    placeholder="E.g. +1 234 567 8900"
+                    value={formData.phone}
+                    onChange={(e: any) => setFormData({...formData, phone: e.target.value})}
+                    isDark={isDark}
+                  />
+                  <FloatingInput
+                    label="Occupation / Role"
                     placeholder="E.g. Manager, Customer Support"
-                    value={formData.occupation} 
-                    onChange={(e: any) => setFormData({...formData, occupation: e.target.value})} 
+                    value={formData.occupation}
+                    onChange={(e: any) => setFormData({...formData, occupation: e.target.value})}
+                    isDark={isDark}
                   />
                 </div>
 
@@ -387,6 +552,17 @@ export default function SignupPage() {
                     Almost there! Set up your organization.
                   </p>
                 </div>
+
+                {/* Error Message */}
+                {errorMessage && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center"
+                  >
+                    {errorMessage}
+                  </motion.div>
+                )}
 
                 <div className="space-y-4 mb-6">
                   
@@ -445,18 +621,20 @@ export default function SignupPage() {
                     </AnimatePresence>
                   </div>
 
-                  <FloatingInput 
-                    label="Organization Name" 
+                  <FloatingInput
+                    label="Organization Name"
                     placeholder="E.g. Central City Hospital"
-                    value={formData.orgName} 
-                    onChange={(e: any) => setFormData({...formData, orgName: e.target.value})} 
+                    value={formData.orgName}
+                    onChange={(e: any) => setFormData({...formData, orgName: e.target.value})}
+                    isDark={isDark}
                   />
-                  
-                  <FloatingInput 
-                    label="Address / Location" 
+
+                  <FloatingInput
+                    label="Address / Location"
                     placeholder="E.g. 123 Main St, New York"
-                    value={formData.orgAddress} 
-                    onChange={(e: any) => setFormData({...formData, orgAddress: e.target.value})} 
+                    value={formData.orgAddress}
+                    onChange={(e: any) => setFormData({...formData, orgAddress: e.target.value})}
+                    isDark={isDark}
                   />
                 </div>
 
@@ -478,14 +656,22 @@ export default function SignupPage() {
                   </div>
 
                   <button
-                    disabled={!formData.agreed || !formData.orgName || !formData.orgType}
+                    onClick={handleFinishSetup}
+                    disabled={!formData.agreed || !formData.orgName || !formData.orgType || isSubmitting}
                     className={`w-full py-3.5 rounded-xl font-medium text-white shadow-lg transition-all ${
-                      formData.agreed && formData.orgName && formData.orgType
+                      formData.agreed && formData.orgName && formData.orgType && !isSubmitting
                         ? "hover:scale-[1.02] bg-gradient-to-r from-blue-500 to-purple-500 hover:shadow-[0_8px_25px_rgba(99,102,241,0.4)] cursor-pointer"
                         : "bg-gray-400/50 cursor-not-allowed opacity-70"
                     }`}
                   >
-                    Finish Setup
+                    {isSubmitting ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Creating Account...</span>
+                      </div>
+                    ) : (
+                      "Finish Setup"
+                    )}
                   </button>
                 </div>
               </motion.div>
@@ -495,5 +681,13 @@ export default function SignupPage() {
         </motion.div>
       </motion.div>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <SignupPageContent />
+    </GoogleOAuthProvider>
   );
 }
