@@ -6,6 +6,7 @@ import { AddMemberForm } from "@/components/team/AddMemberForm"
 import { TeamList } from "@/components/team/TeamList"
 import teamBgImage from "@/assets/team_bg.png"
 import teamBgLightImage from "@/assets/team_bg_light.png"
+import { getCoordinators, addCoordinator, removeCoordinator } from "@/api/api-functions/adminDashboard"
 
 interface Member {
   id: string
@@ -15,25 +16,20 @@ interface Member {
   initials: string
 }
 
+const getInitials = (name: string) => {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2)
+}
+
 export default function TeamPage() {
   const [isDark, setIsDark] = useState(true)
   const [mounted, setMounted] = useState(false)
-  const [members, setMembers] = useState<Member[]>([
-    {
-      id: "1",
-      name: "Sarah Johnson",
-      email: "sarah@waitless.com",
-      role: "Coordinator",
-      initials: "SJ"
-    },
-    {
-      id: "2",
-      name: "Michael Chen",
-      email: "michael@waitless.com",
-      role: "Coordinator",
-      initials: "MC"
-    }
-  ])
+  const [members, setMembers] = useState<Member[]>([])
+  const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null)
 
   useEffect(() => {
     setMounted(true)
@@ -53,28 +49,63 @@ export default function TeamPage() {
     return () => observer.disconnect()
   }, [])
 
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2)
-  }
-
-  const handleAddMember = (name: string, email: string) => {
-    const newMember: Member = {
-      id: Date.now().toString(),
-      name,
-      email,
-      role: "Coordinator",
-      initials: getInitials(name)
+  const fetchCoordinators = async () => {
+    try {
+      const response = await getCoordinators()
+      if (response.status) {
+        const mappedMembers: Member[] = Object.entries(response.data || {}).map(([email, name]) => ({
+          id: email,
+          name: name as string,
+          email: email,
+          role: "Coordinator",
+          initials: getInitials(name as string)
+        }))
+        setMembers(mappedMembers)
+      } else {
+        setMessage({ text: response.message || "Failed to load coordinators.", type: "error" })
+      }
+    } catch (error: any) {
+      console.error("Error fetching coordinators:", error)
+      setMessage({ text: "An error occurred while fetching coordinators.", type: "error" })
     }
-    setMembers([...members, newMember])
   }
 
-  const handleRemoveMember = (id: string) => {
-    setMembers(members.filter((member) => member.id !== id))
+  useEffect(() => {
+    if (mounted) {
+      fetchCoordinators()
+    }
+  }, [mounted])
+
+  const handleAddMember = async (name: string, email: string) => {
+    try {
+      const response = await addCoordinator(name, email)
+      setMessage({ text: response.message, type: response.status ? "success" : "error" })
+      if (response.status) {
+        await fetchCoordinators()
+      }
+    } catch (error: any) {
+      console.error("Error adding coordinator:", error)
+      setMessage({ text: "An error occurred while adding the coordinator.", type: "error" })
+    }
+  }
+
+  const handleRemoveMember = async (id: string) => {
+    try {
+      const response = await removeCoordinator(id)
+      setMessage({ text: response.message, type: response.status ? "success" : "error" })
+      if (response.status) {
+        await fetchCoordinators()
+      }
+      setTimeout(() => {
+        setMessage((prev) => (prev?.text === response.message ? null : prev))
+      }, 3000)
+    } catch (error: any) {
+      console.error("Error removing coordinator:", error)
+      setMessage({ text: "An error occurred while removing the coordinator.", type: "error" })
+      setTimeout(() => {
+        setMessage((prev) => (prev?.text === "An error occurred while removing the coordinator." ? null : prev))
+      }, 3000)
+    }
   }
 
   if (!mounted) {
@@ -144,6 +175,21 @@ export default function TeamPage() {
             Manage your coordinators and staff
           </p>
         </motion.div>
+
+        {/* Error/Success Message */}
+        {message && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`mb-6 p-4 rounded-xl text-sm text-center font-medium backdrop-blur-sm border ${
+              message.type === "success"
+                ? "bg-green-500/10 border-green-500/20 text-green-400"
+                : "bg-red-500/10 border-red-500/20 text-red-400"
+            }`}
+          >
+            {message.text}
+          </motion.div>
+        )}
 
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
