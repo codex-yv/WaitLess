@@ -11,7 +11,7 @@ import { PreviewCard } from "./PreviewCard"
 import { FormsList } from "./FormsList"
 import { EmptyState } from "./EmptyState"
 import { cn } from "@/lib/utils"
-import { createForm } from "@/api/api-functions/adminForms"
+import { createForm, getForms } from "@/api/api-functions/adminForms"
 import { FRONTEND_URL } from "@/config/backend"
 
 interface FormField {
@@ -22,11 +22,15 @@ interface FormField {
 }
 
 interface Form {
-  id: string
-  name: string
-  status: "Active" | "Inactive"
-  createdDate: string
-  scanCount: number
+  _id: string
+  admin_id: string
+  forms_params: any[]
+  title: string
+  opens: string
+  closes: string
+  date: string
+  started: boolean
+  total_scans: number
 }
 
 export function FormBuilderLayout() {
@@ -50,15 +54,7 @@ export function FormBuilderLayout() {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null)
   const [generatedFormId, setGeneratedFormId] = useState<string | null>(null)
   const [selectedForm, setSelectedForm] = useState<Form | null>(null)
-  const [savedForms, setSavedForms] = useState<Form[]>([
-    {
-      id: "1",
-      name: "Aadhar Centre",
-      status: "Active",
-      createdDate: "17-04-2026",
-      scanCount: 6
-    }
-  ])
+  const [savedForms, setSavedForms] = useState<Form[]>([])
 
   const tabs = ["Build a Form", "Show all Forms", "Add New Counter"]
 
@@ -220,6 +216,74 @@ export function FormBuilderLayout() {
     }
   }
 
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab)
+    setSelectedForm(null)
+    setMessage(null)
+  }
+
+  useEffect(() => {
+    if (activeTab === "Show all Forms") {
+      const fetchForms = async () => {
+        try {
+          const response = await getForms()
+          if (response.status) {
+            if (response.data === null || response.data === undefined) {
+              setMessage({ text: response.message || "No forms available.", type: "error" })
+              setTimeout(() => {
+                setMessage((prev) => (prev?.text === (response.message || "No forms available.") ? null : prev))
+              }, 3000)
+              setSavedForms([])
+            } else {
+              setSavedForms(response.data)
+            }
+          } else {
+            setMessage({ text: response.message || "Failed to retrieve forms.", type: "error" })
+            setTimeout(() => {
+              setMessage((prev) => (prev?.text === (response.message || "Failed to retrieve forms.") ? null : prev))
+            }, 3000)
+          }
+        } catch (error: any) {
+          console.error("Error fetching forms:", error)
+          setMessage({ text: "An error occurred while fetching forms.", type: "error" })
+          setTimeout(() => {
+            setMessage((prev) => (prev?.text === "An error occurred while fetching forms." ? null : prev))
+          }, 3000)
+        }
+      }
+      fetchForms()
+    }
+  }, [activeTab])
+
+  const getRecompiledFields = (formsParams: any[]): FormField[] => {
+    return (formsParams || []).map((item) => {
+      if (item.inp) {
+        return {
+          label: item.inp.label,
+          placeholder: item.inp.placeholder,
+          type: "text"
+        }
+      } else if (item.cb) {
+        return {
+          label: item.cb.label,
+          placeholder: "",
+          type: "checkbox",
+          options: Array.isArray(item.cb.options) ? item.cb.options.join(", ") : item.cb.options || ""
+        }
+      } else if (item.dm) {
+        const optionsArray = item.dm.options || []
+        const placeholder = Array.isArray(optionsArray) ? (optionsArray[0] || "Select an option") : "Select an option"
+        return {
+          label: item.dm.label,
+          placeholder: placeholder,
+          type: "dropdown",
+          options: Array.isArray(optionsArray) ? optionsArray.join(", ") : optionsArray || ""
+        }
+      }
+      return { label: "", placeholder: "" }
+    })
+  }
+
   return (
     <div className="space-y-6">
       {/* Tab Navigation - Top Left */}
@@ -240,7 +304,7 @@ export function FormBuilderLayout() {
           return (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => handleTabChange(tab)}
               className={cn(
                 "relative px-6 py-2.5 text-sm font-medium rounded-full transition-all duration-300",
                 isActive 
@@ -434,7 +498,7 @@ export function FormBuilderLayout() {
             <FormsList
               forms={savedForms}
               onFormClick={setSelectedForm}
-              onPreview={(form) => console.log("Preview:", form)}
+              onPreview={(form) => setSelectedForm(form)}
               onQR={(form) => console.log("QR:", form)}
             />
           </div>
@@ -442,21 +506,21 @@ export function FormBuilderLayout() {
           {/* Right Panel - Empty State or Preview */}
           <div className="lg:col-span-7">
             {selectedForm ? (
+              <PreviewCard
+                formTitle={selectedForm.title}
+                fields={getRecompiledFields(selectedForm.forms_params)}
+                fieldCount={getRecompiledFields(selectedForm.forms_params).length}
+              />
+            ) : (
               <div className={cn(
-                "p-8 rounded-2xl border transition-colors duration-300",
-                isDark ? "border-white/10 bg-white/5" : "border-gray-200 bg-white"
+                "p-8 rounded-2xl border text-center transition-colors duration-300",
+                isDark ? "border-white/10 bg-white/5" : "border-gray-200 bg-gray-50"
               )}>
-                <h2 className={cn(
-                  "text-2xl font-bold mb-4 transition-colors duration-300",
-                  isDark ? "text-white" : "text-gray-900"
-                )}>{selectedForm.name}</h2>
                 <p className={cn(
                   "transition-colors duration-300",
                   isDark ? "text-gray-400" : "text-gray-600"
-                )}>Form preview will be displayed here</p>
+                )}>No preview available</p>
               </div>
-            ) : (
-              <EmptyState />
             )}
           </div>
         </div>

@@ -5,11 +5,15 @@ import { FormCard } from "./FormCard"
 import { cn } from "@/lib/utils"
 
 interface Form {
-  id: string
-  name: string
-  status: "Active" | "Inactive"
-  createdDate: string
-  scanCount: number
+  _id: string
+  admin_id: string
+  forms_params: any[]
+  title: string
+  opens: string
+  closes: string
+  date: string
+  started: boolean
+  total_scans: number
 }
 
 interface FormsListProps {
@@ -81,11 +85,11 @@ export function FormsList({
         <div className="space-y-3">
           {forms.map((form) => (
             <FormCard
-              key={form.id}
-              formName={form.name}
-              status={form.status}
-              createdDate={form.createdDate}
-              scanCount={form.scanCount}
+              key={form._id}
+              formName={form.title}
+              status={form.started ? "Active" : "Inactive"}
+              createdDate={form.date}
+              scanCount={form.total_scans}
               onClick={() => onFormClick?.(form)}
               onPreview={() => onPreview?.(form)}
               onQR={() => onQR?.(form)}
