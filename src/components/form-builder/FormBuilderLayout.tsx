@@ -11,6 +11,8 @@ import { PreviewCard } from "./PreviewCard"
 import { FormsList } from "./FormsList"
 import { EmptyState } from "./EmptyState"
 import { cn } from "@/lib/utils"
+import { createForm } from "@/api/api-functions/adminForms"
+import { FRONTEND_URL } from "@/config/backend"
 
 interface FormField {
   label: string
@@ -43,6 +45,10 @@ export function FormBuilderLayout() {
     { label: "Full Name", placeholder: "Enter your name", type: "text" }
   ])
   const [errorMessage, setErrorMessage] = useState("")
+  const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null)
+  const [isPublishing, setIsPublishing] = useState(false)
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null)
+  const [generatedFormId, setGeneratedFormId] = useState<string | null>(null)
   const [selectedForm, setSelectedForm] = useState<Form | null>(null)
   const [savedForms, setSavedForms] = useState<Form[]>([
     {
@@ -142,6 +148,78 @@ export function FormBuilderLayout() {
     setErrorMessage("")
   }
 
+  const handlePublish = async () => {
+    setIsPublishing(true)
+    setQrCodeUrl(null)
+    setGeneratedFormId(null)
+    try {
+      const formParams = previewFields.map((field) => {
+        const type = field.type || "text"
+        if (type === "text") {
+          return {
+            inp: {
+              label: field.label,
+              placeholder: field.placeholder
+            }
+          }
+        } else if (type === "checkbox") {
+          return {
+            cb: {
+              label: field.label,
+              options: field.options ? field.options.split(",").map((opt) => opt.trim()) : []
+            }
+          }
+        } else if (type === "dropdown") {
+          return {
+            dm: {
+              label: field.label,
+              options: field.options ? field.options.split(",").map((opt) => opt.trim()) : []
+            }
+          }
+        }
+        return {}
+      })
+
+      const response = await createForm(
+        formParams,
+        formTitle || "Untitled Form",
+        selectedCounter,
+        openingTime,
+        closingTime
+      )
+
+      const displayMsg = response.message || (response.status ? "Form created successfully" : "Failed to create form")
+      setMessage({
+        text: displayMsg,
+        type: response.status ? "success" : "error"
+      })
+
+      setTimeout(() => {
+        setMessage((prev) => (prev?.text === displayMsg ? null : prev))
+      }, 3000)
+
+      if (response.status && response.form_id) {
+        setGeneratedFormId(response.form_id)
+        const qrDataUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+          `${FRONTEND_URL}/${response.form_id}`
+        )}`
+        setQrCodeUrl(qrDataUrl)
+      }
+    } catch (error: any) {
+      console.error("Error creating form:", error)
+      const errText = "An error occurred while publishing the form."
+      setMessage({
+        text: errText,
+        type: "error"
+      })
+      setTimeout(() => {
+        setMessage((prev) => (prev?.text === errText ? null : prev))
+      }, 3000)
+    } finally {
+      setIsPublishing(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Tab Navigation - Top Left */}
@@ -189,6 +267,21 @@ export function FormBuilderLayout() {
           )
         })}
       </div>
+
+      {/* Error/Success Message */}
+      {message && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`p-4 rounded-xl text-sm font-medium backdrop-blur-sm border ${
+            message.type === "success"
+              ? "bg-green-500/10 border-green-500/20 text-green-400"
+              : "bg-red-500/10 border-red-500/20 text-red-400"
+          }`}
+        >
+          {message.text}
+        </motion.div>
+      )}
 
       {/* Main Layout - Conditional based on active tab */}
       {activeTab === "Build a Form" ? (
@@ -327,6 +420,10 @@ export function FormBuilderLayout() {
               fields={previewFields}
               fieldCount={previewFields.length}
               onDeleteField={handleDeleteField}
+              onPublish={handlePublish}
+              isPublishing={isPublishing}
+              qrCodeUrl={qrCodeUrl}
+              formId={generatedFormId}
             />
           </div>
         </div>

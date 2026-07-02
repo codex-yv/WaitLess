@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react"
 import { Eye, Trash2 } from "lucide-react"
 import { GlassCard } from "./GlassCard"
 import { cn } from "@/lib/utils"
+import { FRONTEND_URL } from "@/config/backend"
 
 interface FormField {
   label: string
@@ -19,6 +20,10 @@ interface PreviewCardProps {
   fieldCount: number
   className?: string
   onDeleteField?: (index: number) => void
+  onPublish?: () => void
+  isPublishing?: boolean
+  qrCodeUrl?: string | null
+  formId?: string | null
 }
 
 export function PreviewCard({ 
@@ -27,7 +32,11 @@ export function PreviewCard({
   fields,
   fieldCount,
   className,
-  onDeleteField 
+  onDeleteField,
+  onPublish,
+  isPublishing = false,
+  qrCodeUrl = null,
+  formId = null
 }: PreviewCardProps) {
   const [isDark, setIsDark] = useState(true)
   const [mounted, setMounted] = useState(false)
@@ -172,10 +181,34 @@ export function PreviewCard({
 
         {/* CTA Button */}
         <button
-          className="w-full px-6 py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-500 to-blue-500 hover:opacity-90 transition-all duration-200 shadow-[0_4px_15px_rgba(99,102,241,0.4)]"
+          onClick={onPublish}
+          disabled={isPublishing}
+          className={cn(
+            "w-full px-6 py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-500 to-blue-500 hover:opacity-90 transition-all duration-200 shadow-[0_4px_15px_rgba(99,102,241,0.4)]",
+            isPublishing && "opacity-50 cursor-not-allowed"
+          )}
         >
-          Generate QR & Publish
+          {isPublishing ? "Generating QR & Publishing..." : "Generate QR & Publish"}
         </button>
+
+        {/* QR Code display */}
+        {qrCodeUrl && formId && (
+          <div className={cn(
+            "flex flex-col items-center justify-center p-4 bg-white/5 rounded-2xl border border-white/10 mt-6",
+            !isDark && "bg-black/5 border-black/10"
+          )}>
+            <p className={cn("text-sm font-semibold mb-3", isDark ? "text-white" : "text-gray-900")}>Form Published!</p>
+            <img src={qrCodeUrl} alt="Form QR Code" className="w-48 h-48 rounded-xl border-4 border-white shadow-xl" />
+            <a 
+              href={`${FRONTEND_URL}/${formId}`} 
+              target="_blank" 
+              rel="noreferrer" 
+              className="text-xs text-purple-400 hover:text-purple-300 mt-3 underline break-all text-center"
+            >
+              {FRONTEND_URL}/{formId}
+            </a>
+          </div>
+        )}
       </div>
     </GlassCard>
   )

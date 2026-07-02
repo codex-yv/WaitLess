@@ -33,7 +33,7 @@ export const getForms = async () => {
  * @param {string} closesAt - Form closing time
  * @returns {Promise<Object>} Response with message, form_id, error, and status
  */
-export const createForm = async (formParams, title, opensAt, closesAt) => {
+export const createForm = async (formParams, title, counter, opensAt, closesAt) => {
     try {
         const token = localStorage.getItem('access_token');
         
@@ -46,6 +46,7 @@ export const createForm = async (formParams, title, opensAt, closesAt) => {
             body: JSON.stringify({
                 form_params: formParams,
                 title: title,
+                counter: counter,
                 opens_at: opensAt,
                 closes_at: closesAt
             })
