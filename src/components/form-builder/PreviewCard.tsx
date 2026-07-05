@@ -200,12 +200,12 @@ export function PreviewCard({
             <p className={cn("text-sm font-semibold mb-3", isDark ? "text-white" : "text-gray-900")}>Form Published!</p>
             <img src={qrCodeUrl} alt="Form QR Code" className="w-48 h-48 rounded-xl border-4 border-white shadow-xl" />
             <a 
-              href={`${FRONTEND_URL}/${formId}`} 
+              href={`${FRONTEND_URL}/scannedqr/${formId}`} 
               target="_blank" 
               rel="noreferrer" 
               className="text-xs text-purple-400 hover:text-purple-300 mt-3 underline break-all text-center"
             >
-              {FRONTEND_URL}/{formId}
+              {FRONTEND_URL}/scannedqr/{formId}
             </a>
           </div>
         )}

@@ -56,33 +56,26 @@ export const scanQR = async (formId) => {
  */
 
 export const reScanQR = async () => {
-
     try {
-
         const token = localStorage.getItem('client_access_token');
-
+        if (!token) {
+            return { status: false, statusCode: 401, message: "Unauthorized" };
+        }
         
-
         const response = await fetch(`${BACKEND_URL}/${clientForm.reScanQR}`, {
-
             method: 'GET',
-
             headers: {
-
                 'Content-Type': 'application/json',
-
                 'Authorization': `Bearer ${token}`
-
             }
-
         });
 
-
+        if (response.status === 401) {
+            return { status: false, statusCode: 401, message: "Unauthorized" };
+        }
 
         const data = await response.json();
-
         return data;
-
     } catch (error) {
 
         console.error('Re-scan QR error:', error);

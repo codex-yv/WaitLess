@@ -1,16 +1,61 @@
 "use client";
 
-import { Hourglass } from "lucide-react";
-import { useTheme } from "@/contexts/ThemeContext";
-import clsx from "clsx";
+import { useState, useEffect } from "react"
+import { Hourglass } from "lucide-react"
+import { useTheme } from "@/contexts/ThemeContext"
+import clsx from "clsx"
 
 export function ProgressCard() {
   const { isDark } = useTheme();
+  const [waitTime, setWaitTime] = useState(28)
+
+  useEffect(() => {
+    const updateValues = () => {
+      const time = localStorage.getItem("expected_time")
+      if (time) setWaitTime(parseInt(time))
+    }
+
+    updateValues()
+    window.addEventListener("storage", updateValues)
+    window.addEventListener("queueUpdate", updateValues)
+    return () => {
+      window.removeEventListener("storage", updateValues)
+      window.removeEventListener("queueUpdate", updateValues)
+    }
+  }, [])
+
   const size = 110;
   const stroke = 6;
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
-  const progress = 0.62;
+  
+  // Dynamically calculate progress circle based on spots, falling back to 0.62
+  const [progress, setProgress] = useState(0.62)
+
+  useEffect(() => {
+    const updateProgress = () => {
+      const servingStr = localStorage.getItem("current_pos")
+      const spotStr = localStorage.getItem("your_spot")
+      if (servingStr && spotStr) {
+        const serving = parseInt(servingStr)
+        const spot = parseInt(spotStr)
+        if (spot > 0) {
+          setProgress(Math.min(1, serving / spot))
+          return
+        }
+      }
+      setProgress(0.62)
+    }
+
+    updateProgress()
+    window.addEventListener("storage", updateProgress)
+    window.addEventListener("queueUpdate", updateProgress)
+    return () => {
+      window.removeEventListener("storage", updateProgress)
+      window.removeEventListener("queueUpdate", updateProgress)
+    }
+  }, [])
+
   const offset = circumference * (1 - progress);
 
   return (
@@ -84,7 +129,7 @@ export function ProgressCard() {
               : "bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent"
           )}
         >
-          28
+          {waitTime}
         </p>
         <span
           className={clsx(

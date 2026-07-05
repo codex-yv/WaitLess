@@ -1,11 +1,12 @@
 'use client';
 
-import { Flag } from "lucide-react";
-import { motion } from "framer-motion";
-import { QueueCard } from "./QueueCard";
-import { ProgressCard } from "./ProgressCard";
-import { useTheme } from "@/contexts/ThemeContext";
-import clsx from "clsx";
+import { useState, useEffect } from "react"
+import { Flag } from "lucide-react"
+import { motion } from "framer-motion"
+import { QueueCard } from "./QueueCard"
+import { ProgressCard } from "./ProgressCard"
+import { useTheme } from "@/contexts/ThemeContext"
+import clsx from "clsx"
 
 function NumberNode({ n }: { n: number }) {
   const { isDark } = useTheme();
@@ -44,6 +45,25 @@ function Dots() {
 
 export function Timeline() {
   const { isDark } = useTheme();
+  const [nowServing, setNowServing] = useState(3)
+  const [yourSpot, setYourSpot] = useState(43)
+
+  useEffect(() => {
+    const updateValues = () => {
+      const serving = localStorage.getItem("current_pos")
+      const spot = localStorage.getItem("your_spot")
+      if (serving) setNowServing(parseInt(serving))
+      if (spot) setYourSpot(parseInt(spot))
+    }
+
+    updateValues()
+    window.addEventListener("storage", updateValues)
+    window.addEventListener("queueUpdate", updateValues)
+    return () => {
+      window.removeEventListener("storage", updateValues)
+      window.removeEventListener("queueUpdate", updateValues)
+    }
+  }, [])
 
   return (
     <div className="relative mt-8">
@@ -69,7 +89,7 @@ export function Timeline() {
                 isDark ? "bg-white/20" : "bg-gray-300/70"
               )}
             />
-            <QueueCard label="Now Serving" number={3} variant="serving" />
+            <QueueCard label="Now Serving" number={nowServing} variant="serving" />
           </div>
           {/* Concentric green node: outer ring + inner solid */}
           <div className="absolute left-1/2 -translate-x-1/2 z-10">
@@ -122,7 +142,7 @@ export function Timeline() {
                 isDark ? "bg-white/20" : "bg-gray-300/70"
               )}
             />
-            <QueueCard label="You" number={43} variant="you" />
+            <QueueCard label="You" number={yourSpot} variant="you" />
           </div>
           {/* Concentric indigo node: outer ring + inner solid */}
           <div className="absolute left-1/2 -translate-x-1/2 z-10">

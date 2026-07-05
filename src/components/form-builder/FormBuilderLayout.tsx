@@ -97,29 +97,29 @@ export function FormBuilderLayout() {
     }
 
     // Check for duplicate label
-    const labelExists = previewFields.some(field => 
+    const labelExists = previewFields.some(field =>
       field.label.toLowerCase() === fieldLabel.toLowerCase()
     )
-    
+
     if (labelExists) {
       setErrorMessage("A field with this label already exists. Please use a different label.")
       return
     }
-    
+
     // Validate options for checkbox and dropdown
     if ((fieldType === "checkbox" || fieldType === "dropdown") && !fieldOptions) {
       setErrorMessage("Options are required for Checkbox and Dropdown Menu fields.")
       return
     }
-    
+
     // Validate placeholder for text input
     if (fieldType === "text" && !fieldPlaceholder) {
       setErrorMessage("Placeholder is required for Text Input fields.")
       return
     }
-    
+
     setErrorMessage("")
-    
+
     // Determine placeholder based on field type
     let placeholder = fieldPlaceholder
     if (fieldType === "dropdown" && fieldOptions) {
@@ -128,9 +128,9 @@ export function FormBuilderLayout() {
     } else if (fieldType === "checkbox") {
       placeholder = ""
     }
-    
-    setPreviewFields([...previewFields, { 
-      label: fieldLabel, 
+
+    setPreviewFields([...previewFields, {
+      label: fieldLabel,
       placeholder,
       type: fieldType,
       options: (fieldType === "checkbox" || fieldType === "dropdown") ? fieldOptions : undefined
@@ -199,7 +199,7 @@ export function FormBuilderLayout() {
       if (response.status && response.form_id) {
         setGeneratedFormId(response.form_id)
         const qrDataUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
-          `${FRONTEND_URL}/${response.form_id}`
+          `${FRONTEND_URL}/scannedqr/${response.form_id}`
         )}`
         setQrCodeUrl(qrDataUrl)
       }
@@ -257,8 +257,20 @@ export function FormBuilderLayout() {
     }
   }, [activeTab])
 
-  const getRecompiledFields = (formsParams: any[]): FormField[] => {
-    return (formsParams || []).map((item) => {
+  const getRecompiledFields = (formsParams: any): FormField[] => {
+    let parsedParams: any[] = []
+    if (Array.isArray(formsParams)) {
+      parsedParams = formsParams
+    } else if (typeof formsParams === "string") {
+      try {
+        const formatted = formsParams.replace(/'/g, '"')
+        parsedParams = JSON.parse(formatted)
+      } catch (e) {
+        console.error("Error parsing formsParams in getRecompiledFields:", e)
+      }
+    }
+
+    return (parsedParams || []).map((item) => {
       if (item.inp) {
         return {
           label: item.inp.label,
@@ -309,8 +321,8 @@ export function FormBuilderLayout() {
               onClick={() => handleTabChange(tab)}
               className={cn(
                 "relative px-6 py-2.5 text-sm font-medium rounded-full transition-all duration-300",
-                isActive 
-                  ? "text-white" 
+                isActive
+                  ? "text-white"
                   : isDark
                     ? "text-gray-400 hover:text-white hover:bg-white/[0.08] hover:shadow-[0_0_15px_rgba(255,255,255,0.05)]"
                     : "text-gray-600 hover:text-gray-900 bg-transparent"
@@ -339,11 +351,10 @@ export function FormBuilderLayout() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`p-4 rounded-xl text-sm font-medium backdrop-blur-sm border ${
-            message.type === "success"
+          className={`p-4 rounded-xl text-sm font-medium backdrop-blur-sm border ${message.type === "success"
               ? "bg-green-500/10 border-green-500/20 text-green-400"
               : "bg-red-500/10 border-red-500/20 text-red-400"
-          }`}
+            }`}
         >
           {message.text}
         </motion.div>
@@ -370,7 +381,7 @@ export function FormBuilderLayout() {
                   label="Form Title"
                   placeholder="e.g. Patient Registration Form"
                   value={formTitle}
-                  className = "py-2 text-[15px]"
+                  className="py-2 text-[15px]"
                   onChange={(e) => setFormTitle(e.target.value)}
                 />
 
@@ -379,7 +390,7 @@ export function FormBuilderLayout() {
                   label="Select Counter"
                   options={counterOptions}
                   value={selectedCounter}
-                  className = "py-2 text-[15px]"
+                  className="py-2 text-[15px]"
                   onChange={setSelectedCounter}
                   placeholder="Select a counter"
                 />
@@ -389,13 +400,13 @@ export function FormBuilderLayout() {
                   <TimePicker
                     label="Opening Time"
                     value={openingTime}
-                    className = "py-2 text-[15px]"
+                    className="py-2 text-[15px]"
                     onChange={(e) => setOpeningTime(e.target.value)}
                   />
                   <TimePicker
                     label="Closing Time"
                     value={closingTime}
-                    className = "py-2 text-[15px]"
+                    className="py-2 text-[15px]"
                     onChange={(e) => setClosingTime(e.target.value)}
                   />
                 </div>
@@ -405,7 +416,7 @@ export function FormBuilderLayout() {
                   label="Field Type"
                   options={fieldTypeOptions}
                   value={fieldType}
-                  className = "py-2 text-[15px]"
+                  className="py-2 text-[15px]"
                   onChange={setFieldType}
                   placeholder="Select field type"
                 />
@@ -425,7 +436,7 @@ export function FormBuilderLayout() {
                     label="Placeholder Text"
                     placeholder="e.g. Enter your name"
                     value={fieldPlaceholder}
-                    className = "py-2 text-[15px]"
+                    className="py-2 text-[15px]"
                     onChange={(e) => setFieldPlaceholder(e.target.value)}
                   />
                 )}
@@ -436,7 +447,7 @@ export function FormBuilderLayout() {
                     label="Options"
                     placeholder="e.g. Option 1, Option 2, Option 3"
                     value={fieldOptions}
-                    className = "py-2 text-[15px]"
+                    className="py-2 text-[15px]"
                     onChange={(e) => setFieldOptions(e.target.value)}
                   />
                 )}
@@ -542,8 +553,8 @@ export function FormBuilderLayout() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className={cn(
             "relative w-full max-w-md p-6 rounded-2xl border transition-all duration-300 shadow-2xl animate-in fade-in zoom-in-95 duration-200",
-            isDark 
-              ? "bg-[#0b0f19] border-white/10 text-white shadow-[0_8px_32px_rgba(0,0,0,0.5)]" 
+            isDark
+              ? "bg-[#0b0f19] border-white/10 text-white shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
               : "bg-white border-gray-200 text-gray-900 shadow-[0_8px_32px_rgba(0,0,0,0.15)]"
           )}>
             {/* Close Button */}
@@ -551,8 +562,8 @@ export function FormBuilderLayout() {
               onClick={() => setQrModalForm(null)}
               className={cn(
                 "absolute top-4 right-4 p-1.5 rounded-lg border transition-all duration-200 cursor-pointer",
-                isDark 
-                  ? "bg-white/5 hover:bg-white/10 border-white/10 hover:border-white/20 text-gray-400 hover:text-white" 
+                isDark
+                  ? "bg-white/5 hover:bg-white/10 border-white/10 hover:border-white/20 text-gray-400 hover:text-white"
                   : "bg-gray-50 hover:bg-gray-100 border-gray-200 hover:border-gray-300 text-gray-500 hover:text-gray-900"
               )}
             >
@@ -565,22 +576,22 @@ export function FormBuilderLayout() {
             <div className="flex flex-col items-center justify-center mt-4">
               <h3 className="text-xl font-bold mb-1 text-center">{qrModalForm.title}</h3>
               <p className={cn("text-xs mb-6", isDark ? "text-gray-400" : "text-gray-500")}>Scan to join the queue</p>
-              
+
               <div className="p-4 bg-white rounded-xl shadow-inner mb-4">
-                <img 
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${FRONTEND_URL}/${qrModalForm._id}`)}`} 
-                  alt="Form QR Code" 
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${FRONTEND_URL}/scannedqr/${qrModalForm._id}`)}`}
+                  alt="Form QR Code"
                   className="w-48 h-48"
                 />
               </div>
-              
-              <a 
-                href={`${FRONTEND_URL}/${qrModalForm._id}`}
+
+              <a
+                href={`${FRONTEND_URL}/scannedqr/${qrModalForm._id}`}
                 target="_blank"
                 rel="noreferrer"
                 className="text-sm text-purple-400 hover:text-purple-300 underline break-all text-center"
               >
-                {FRONTEND_URL}/{qrModalForm._id}
+                {FRONTEND_URL}/scannedqr/{qrModalForm._id}
               </a>
             </div>
           </div>
