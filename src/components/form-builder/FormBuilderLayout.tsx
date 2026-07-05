@@ -31,6 +31,7 @@ interface Form {
   date: string
   started: boolean
   total_scans: number
+  expired: boolean
 }
 
 export function FormBuilderLayout() {
@@ -54,6 +55,7 @@ export function FormBuilderLayout() {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null)
   const [generatedFormId, setGeneratedFormId] = useState<string | null>(null)
   const [selectedForm, setSelectedForm] = useState<Form | null>(null)
+  const [qrModalForm, setQrModalForm] = useState<Form | null>(null)
   const [savedForms, setSavedForms] = useState<Form[]>([])
 
   const tabs = ["Build a Form", "Show all Forms", "Add New Counter"]
@@ -499,7 +501,7 @@ export function FormBuilderLayout() {
               forms={savedForms}
               onFormClick={setSelectedForm}
               onPreview={(form) => setSelectedForm(form)}
-              onQR={(form) => console.log("QR:", form)}
+              onQR={(form) => setQrModalForm(form)}
             />
           </div>
 
@@ -533,6 +535,55 @@ export function FormBuilderLayout() {
             "transition-colors duration-300",
             isDark ? "text-gray-400" : "text-gray-600"
           )}>Add New Counter functionality coming soon</p>
+        </div>
+      )}
+      {/* QR Modal Popup */}
+      {qrModalForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className={cn(
+            "relative w-full max-w-md p-6 rounded-2xl border transition-all duration-300 shadow-2xl animate-in fade-in zoom-in-95 duration-200",
+            isDark 
+              ? "bg-[#0b0f19] border-white/10 text-white shadow-[0_8px_32px_rgba(0,0,0,0.5)]" 
+              : "bg-white border-gray-200 text-gray-900 shadow-[0_8px_32px_rgba(0,0,0,0.15)]"
+          )}>
+            {/* Close Button */}
+            <button
+              onClick={() => setQrModalForm(null)}
+              className={cn(
+                "absolute top-4 right-4 p-1.5 rounded-lg border transition-all duration-200 cursor-pointer",
+                isDark 
+                  ? "bg-white/5 hover:bg-white/10 border-white/10 hover:border-white/20 text-gray-400 hover:text-white" 
+                  : "bg-gray-50 hover:bg-gray-100 border-gray-200 hover:border-gray-300 text-gray-500 hover:text-gray-900"
+              )}
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Content */}
+            <div className="flex flex-col items-center justify-center mt-4">
+              <h3 className="text-xl font-bold mb-1 text-center">{qrModalForm.title}</h3>
+              <p className={cn("text-xs mb-6", isDark ? "text-gray-400" : "text-gray-500")}>Scan to join the queue</p>
+              
+              <div className="p-4 bg-white rounded-xl shadow-inner mb-4">
+                <img 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${FRONTEND_URL}/${qrModalForm._id}`)}`} 
+                  alt="Form QR Code" 
+                  className="w-48 h-48"
+                />
+              </div>
+              
+              <a 
+                href={`${FRONTEND_URL}/${qrModalForm._id}`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-sm text-purple-400 hover:text-purple-300 underline break-all text-center"
+              >
+                {FRONTEND_URL}/{qrModalForm._id}
+              </a>
+            </div>
+          </div>
         </div>
       )}
     </div>

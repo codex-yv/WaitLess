@@ -14,6 +14,7 @@ interface Form {
   date: string
   started: boolean
   total_scans: number
+  expired: boolean
 }
 
 interface FormsListProps {
@@ -87,7 +88,7 @@ export function FormsList({
             <FormCard
               key={form._id}
               formName={form.title}
-              status={form.started ? "Active" : "Inactive"}
+              status={form.expired ? "Expired" : (form.started ? "Active" : "Inactive")}
               createdDate={form.date}
               scanCount={form.total_scans}
               onClick={() => onFormClick?.(form)}

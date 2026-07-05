@@ -4,11 +4,12 @@ import React, { useState, useEffect } from "react"
 import { Users } from "lucide-react"
 import { LiveQueueCard } from "@/components/live-queue/LiveQueueCard"
 import { cn } from "@/lib/utils"
+import { getForms } from "@/api/api-functions/adminForms"
 
 interface Form {
   id: string
   name: string
-  status: "Active" | "Inactive"
+  status: "Active" | "Inactive" | "Expired"
   createdDate: string
   scanCount: number
 }
@@ -16,16 +17,8 @@ interface Form {
 export default function LiveQueuePage() {
   const [isDark, setIsDark] = useState(true)
   const [mounted, setMounted] = useState(false)
-
-  const forms: Form[] = [
-    {
-      id: "1",
-      name: "Aadhar Centre",
-      status: "Active",
-      createdDate: "17-04-2026",
-      scanCount: 6
-    }
-  ]
+  const [forms, setForms] = useState<Form[]>([])
+  const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null)
 
   useEffect(() => {
     setMounted(true)
@@ -44,6 +37,37 @@ export default function LiveQueuePage() {
 
     return () => observer.disconnect()
   }, [])
+
+  useEffect(() => {
+    const fetchForms = async () => {
+      try {
+        const response = await getForms()
+        if (response.status) {
+          if (response.data === null || response.data === undefined) {
+            setForms([])
+          } else {
+            const mappedForms: Form[] = response.data.map((item: any) => ({
+              id: item._id,
+              name: item.title,
+              status: item.expired ? "Expired" : (item.started ? "Active" : "Inactive"),
+              createdDate: item.date,
+              scanCount: item.total_scans
+            }))
+            setForms(mappedForms)
+          }
+        } else {
+          setMessage({ text: response.message || "Failed to retrieve live queue forms.", type: "error" })
+        }
+      } catch (error: any) {
+        console.error("Error fetching live queue forms:", error)
+        setMessage({ text: "An error occurred while fetching forms.", type: "error" })
+      }
+    }
+
+    if (mounted) {
+      fetchForms()
+    }
+  }, [mounted])
 
   if (!mounted) return null
 
@@ -67,6 +91,17 @@ export default function LiveQueuePage() {
           )}>yourajverma960@gmail.com</span>
         </div>
       </div>
+
+      {/* Error/Success Message */}
+      {message && (
+        <div className={`p-4 rounded-xl text-sm font-medium backdrop-blur-sm border mb-4 ${
+          message.type === "success"
+            ? "bg-green-500/10 border-green-500/20 text-green-400"
+            : "bg-red-500/10 border-red-500/20 text-red-400"
+        }`}>
+          {message.text}
+        </div>
+      )}
 
       {/* Main Section */}
       <div className="space-y-4">
