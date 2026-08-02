@@ -7,22 +7,6 @@ import clsx from "clsx"
 
 export function ProgressCard() {
   const { isDark } = useTheme();
-  const [waitTime, setWaitTime] = useState(28)
-
-  useEffect(() => {
-    const updateValues = () => {
-      const time = localStorage.getItem("expected_time")
-      if (time) setWaitTime(parseInt(time))
-    }
-
-    updateValues()
-    window.addEventListener("storage", updateValues)
-    window.addEventListener("queueUpdate", updateValues)
-    return () => {
-      window.removeEventListener("storage", updateValues)
-      window.removeEventListener("queueUpdate", updateValues)
-    }
-  }, [])
 
   const size = 110;
   const stroke = 6;
@@ -123,29 +107,11 @@ export function ProgressCard() {
       <div className="mt-3 text-center">
         <p
           className={clsx(
-            "text-3xl font-bold inline",
-            isDark
-              ? "text-indigo-400"
-              : "bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent"
+            "text-xs font-semibold tracking-wide uppercase",
+            isDark ? "text-indigo-400" : "text-indigo-600"
           )}
         >
-          {waitTime}
-        </p>
-        <span
-          className={clsx(
-            "text-sm font-medium ml-1",
-            isDark ? "text-indigo-400" : "text-indigo-400"
-          )}
-        >
-          min
-        </span>
-        <p
-          className={clsx(
-            "text-xs mt-0.5",
-            isDark ? "text-gray-400" : "text-gray-500"
-          )}
-        >
-          remaining
+          Under development
         </p>
       </div>
     </div>

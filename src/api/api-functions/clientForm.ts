@@ -51,7 +51,7 @@ export const scanQR = async (formId) => {
 
  * Get existing form status (authentication required)
 
- * @returns {Promise<Object>} Response with message, status, template, your_spot, current_pos, expected_time, notification
+ * @returns {Promise<Object>} Response with message, status, your_spot, current_pos
 
  */
 

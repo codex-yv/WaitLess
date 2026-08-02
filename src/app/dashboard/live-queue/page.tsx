@@ -47,7 +47,7 @@ export default function LiveQueuePage() {
             setForms([])
           } else {
             const mappedForms: Form[] = response.data.map((item: any) => ({
-              id: item._id,
+              id: item._id || item.id || item.form_id,
               name: item.title,
               status: item.expired ? "Expired" : (item.started ? "Active" : "Inactive"),
               createdDate: item.date,

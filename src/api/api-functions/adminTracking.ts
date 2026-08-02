@@ -10,13 +10,27 @@ export const getLiveTracking = async (formId) => {
     try {
         const token = localStorage.getItem('access_token');
         
-        const response = await fetch(`${BACKEND_URL}/${adminTrackingEndpoints.liveTracking}?form_id=${formId}`, {
+        let response = await fetch(`${BACKEND_URL}/${adminTrackingEndpoints.liveTracking}?form_id=${formId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
         });
+
+        // Fallback: try with trailing slash if status 404
+        if (response.status === 404) {
+            const altEndpoint = adminTrackingEndpoints.liveTracking.endsWith('/') 
+                ? adminTrackingEndpoints.liveTracking.slice(0, -1) 
+                : `${adminTrackingEndpoints.liveTracking}/`;
+            response = await fetch(`${BACKEND_URL}/${altEndpoint}?form_id=${formId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+        }
 
         const data = await response.json();
         return data;

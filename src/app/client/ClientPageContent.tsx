@@ -8,6 +8,7 @@ import { ActionButtons } from "@/components/client/ActionButtons"
 import { Footer } from "@/components/client/Footer"
 import { useTheme } from "@/contexts/ThemeContext"
 import { reScanQR } from "@/api/api-functions/clientForm"
+import { cancelRegistration } from "@/api/api-functions/clientDash"
 import { useRouter } from "next/navigation"
 import clsx from "clsx"
 
@@ -15,6 +16,21 @@ export default function ClientPageContent() {
   const { isDark, mounted } = useTheme()
   const router = useRouter()
   const [isUnauthorized, setIsUnauthorized] = useState(false)
+  const [leaveMessage, setLeaveMessage] = useState<string | null>(null)
+  const [isLeaving, setIsLeaving] = useState(false)
+
+  const handleLeaveQueue = async () => {
+    setIsLeaving(true)
+    try {
+      const response = await cancelRegistration()
+      setLeaveMessage(response.message || "You have left the queue.")
+    } catch (err) {
+      console.error("Error leaving queue:", err)
+      setLeaveMessage("Failed to leave queue. Please try again.")
+    } finally {
+      setIsLeaving(false)
+    }
+  }
 
   useEffect(() => {
     if (!mounted) return
@@ -25,7 +41,6 @@ export default function ClientPageContent() {
           setIsUnauthorized(false)
           localStorage.setItem("current_pos", String(response.current_pos))
           localStorage.setItem("your_spot", String(response.your_spot))
-          localStorage.setItem("expected_time", String(response.expected_time))
           window.dispatchEvent(new Event("queueUpdate"))
         } else if (response.statusCode === 401) {
           setIsUnauthorized(true)
@@ -63,7 +78,25 @@ export default function ClientPageContent() {
       >
         <Header />
 
-        {isUnauthorized ? (
+        {leaveMessage ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
+            <div className="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center text-2xl font-bold">
+              ✓
+            </div>
+            <h2 className={clsx("text-xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+              Queue Status
+            </h2>
+            <p className={clsx("text-sm max-w-[280px] mx-auto", isDark ? "text-gray-400" : "text-gray-500")}>
+              {leaveMessage}
+            </p>
+            <button 
+              onClick={() => router.push("/")}
+              className="px-6 py-2.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-semibold hover:opacity-90 transition-all duration-200 cursor-pointer shadow-lg shadow-indigo-500/25"
+            >
+              Go to Home
+            </button>
+          </div>
+        ) : isUnauthorized ? (
           <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
             <div className="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center text-2xl font-bold animate-pulse">?</div>
             <h2 className={clsx("text-xl font-bold", isDark ? "text-white" : "text-gray-900")}>No Active Ticket</h2>
@@ -103,7 +136,7 @@ export default function ClientPageContent() {
 
             <Timeline />
 
-            <ActionButtons />
+            <ActionButtons onLeaveQueue={handleLeaveQueue} isLeaving={isLeaving} />
           </>
         )}
 

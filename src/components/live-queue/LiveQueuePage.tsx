@@ -20,10 +20,14 @@ interface QueueItem {
   params_val?: any[]
 }
 
-export function LiveQueuePage() {
+interface LiveQueuePageProps {
+  formId?: string
+}
+
+export function LiveQueuePage({ formId: propFormId }: LiveQueuePageProps = {}) {
   const { isDark, mounted } = useTheme()
   const params = useParams()
-  const formId = params?.formId as string
+  const formId = propFormId || (params?.formId as string)
 
   const [queueItems, setQueueItems] = useState<QueueItem[]>([])
   const [completedItems, setCompletedItems] = useState<QueueItem[]>([])

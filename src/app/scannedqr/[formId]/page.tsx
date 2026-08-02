@@ -159,7 +159,6 @@ export default function ScannedQRPage() {
           if (statusRes.status) {
             localStorage.setItem("current_pos", String(statusRes.current_pos))
             localStorage.setItem("your_spot", String(statusRes.your_spot))
-            localStorage.setItem("expected_time", String(statusRes.expected_time))
           }
         } catch (rescanErr) {
           console.error("Error during rescan after submit:", rescanErr)
