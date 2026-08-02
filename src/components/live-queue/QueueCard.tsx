@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { X } from "lucide-react"
+import { X, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useTheme } from "@/contexts/ThemeContext"
 
@@ -11,6 +11,7 @@ interface QueueCardProps {
   token: string
   time: string
   isServing?: boolean
+  isCancelling?: boolean
   onCancel?: () => void
   onClick?: () => void
   className?: string
@@ -22,6 +23,7 @@ export const QueueCard = React.memo(function QueueCard({
   token,
   time,
   isServing = false,
+  isCancelling = false,
   onCancel,
   onClick,
   className
@@ -75,16 +77,21 @@ export const QueueCard = React.memo(function QueueCard({
           <button
             onClick={(e) => {
               e.stopPropagation()
-              onCancel()
+              if (!isCancelling) onCancel()
             }}
+            disabled={isCancelling}
             className={cn(
-              "rounded-full w-8 h-8 flex items-center justify-center transition-all duration-200 cursor-pointer",
+              "rounded-full w-8 h-8 flex items-center justify-center transition-all duration-200 cursor-pointer disabled:opacity-50",
               isDark
                 ? "bg-red-500/10 text-red-400 border border-red-400/20 hover:bg-red-500/20"
                 : "bg-red-50 text-red-600 border border-red-200 hover:bg-red-100"
             )}
           >
-            <X className="w-4 h-4" />
+            {isCancelling ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <X className="w-4 h-4" />
+            )}
           </button>
         )}
       </div>

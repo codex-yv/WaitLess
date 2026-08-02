@@ -7,7 +7,7 @@ import { CompletedCard } from "./CompletedCard"
 import { LiveStats } from "./LiveStats"
 import { cn } from "@/lib/utils"
 import { useTheme } from "@/contexts/ThemeContext"
-import { getLiveTracking } from "@/api/api-functions/adminTracking"
+import { getLiveTracking, nextCustomer, skipCustomer, cancelCustomer } from "@/api/api-functions/adminTracking"
 import { useParams } from "next/navigation"
 
 interface QueueItem {
@@ -17,6 +17,11 @@ interface QueueItem {
   token: string
   time: string
   status?: "Completed" | "Cancelled" | "Skipped"
+  serving?: boolean
+  checked?: boolean
+  skipped?: boolean
+  cancelled?: boolean
+  missed?: boolean
   params_val?: any[]
 }
 
@@ -29,6 +34,7 @@ export function LiveQueuePage({ formId: propFormId }: LiveQueuePageProps = {}) {
   const params = useParams()
   const formId = propFormId || (params?.formId as string)
 
+  const [servingItems, setServingItems] = useState<QueueItem[]>([])
   const [queueItems, setQueueItems] = useState<QueueItem[]>([])
   const [completedItems, setCompletedItems] = useState<QueueItem[]>([])
   const [skippedItems, setSkippedItems] = useState<QueueItem[]>([])
@@ -37,6 +43,10 @@ export function LiveQueuePage({ formId: propFormId }: LiveQueuePageProps = {}) {
   const [waiting, setWaiting] = useState(0)
   const [served, setServed] = useState(0)
   const [completionRate, setCompletionRate] = useState(0)
+
+  const [isCallingNext, setIsCallingNext] = useState(false)
+  const [isSkipping, setIsSkipping] = useState(false)
+  const [cancellingId, setCancellingId] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchLiveQueue = async () => {
@@ -69,20 +79,25 @@ export function LiveQueuePage({ formId: propFormId }: LiveQueuePageProps = {}) {
               skipped: item.skipped,
               cancelled: item.cancelled,
               missed: item.missed,
+              serving: Boolean(item.serving),
               params_val: item.params_val
             }
           })
 
+          const serving = allSubmissions.filter(
+            (item: any) => item.serving && !item.skipped && !item.cancelled && !item.missed
+          )
           const inQueue = allSubmissions.filter(
-            (item: any) => !item.checked && !item.skipped && !item.cancelled && !item.missed
+            (item: any) => !item.serving && !item.checked && !item.skipped && !item.cancelled && !item.missed
           )
           const completed = allSubmissions.filter(
-            (item: any) => item.checked || item.cancelled || item.missed
+            (item: any) => !item.serving && (item.checked || item.cancelled || item.missed)
           )
           const skipped = allSubmissions.filter(
-            (item: any) => item.skipped && !item.checked && !item.cancelled && !item.missed
+            (item: any) => !item.serving && item.skipped && !item.checked && !item.cancelled && !item.missed
           )
 
+          setServingItems(serving)
           setQueueItems(inQueue)
           setCompletedItems(completed)
           setSkippedItems(skipped)
@@ -103,33 +118,120 @@ export function LiveQueuePage({ formId: propFormId }: LiveQueuePageProps = {}) {
     }
   }, [mounted, formId])
 
-  const handleCallNext = () => {
-    if (queueItems.length > 0) {
-      const firstItem = queueItems[0]
-      setCompletedItems([...completedItems, { ...firstItem, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), status: "Completed" }])
-      setQueueItems(queueItems.slice(1))
-      setWaiting(prev => Math.max(0, prev - 1))
-      setServed(prev => prev + 1)
-      const total = queueItems.length + completedItems.length + skippedItems.length
-      setCompletionRate(total > 0 ? Math.round(((served + 1) / total) * 100) : 0)
+  const handleCallNext = async () => {
+    if (!formId) return
+    let currentServing = [...servingItems]
+    let currentQueue = [...queueItems]
+
+    const targetItem = currentQueue.length > 0 ? currentQueue[0] : (currentServing.length > 0 ? currentServing[0] : null)
+    if (!targetItem) return
+
+    setIsCallingNext(true)
+    try {
+      const response = await nextCustomer(formId, targetItem.token)
+      if (response && response.status) {
+        let currentCompleted = [...completedItems]
+        let newServedCount = served
+
+        // If there is any submission in SERVING section:
+        if (currentServing.length > 0) {
+          const finishedItem = currentServing[0]
+          const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          currentCompleted.push({
+            ...finishedItem,
+            time: timeStr,
+            status: "Completed",
+            checked: true,
+            serving: false
+          })
+          currentServing = currentServing.slice(1)
+          newServedCount += 1
+        }
+
+        // Put top submission of IN QUEUE section to SERVING section
+        if (currentQueue.length > 0) {
+          const nextItem = currentQueue[0]
+          currentServing.push({ ...nextItem, serving: true })
+          currentQueue = currentQueue.slice(1)
+        }
+
+        setServingItems(currentServing)
+        setQueueItems(currentQueue)
+        setCompletedItems(currentCompleted)
+
+        setWaiting(currentQueue.length)
+        setServed(newServedCount)
+        const total = currentServing.length + currentQueue.length + currentCompleted.length + skippedItems.length
+        setCompletionRate(total > 0 ? Math.round((newServedCount / total) * 100) : 0)
+      } else {
+        console.error("Failed to call next customer:", response?.message)
+      }
+    } catch (err) {
+      console.error("Error in Call Next:", err)
+    } finally {
+      setIsCallingNext(false)
     }
   }
 
-  const handleSkip = () => {
-    if (queueItems.length > 0) {
-      const firstItem = queueItems[0]
-      setSkippedItems([...skippedItems, { ...firstItem, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), status: "Skipped" }])
-      setQueueItems(queueItems.slice(1))
-      setWaiting(prev => Math.max(0, prev - 1))
+  const handleSkip = async () => {
+    if (!formId) return
+    let currentQueue = [...queueItems]
+
+    const targetItem = currentQueue.length > 0 ? currentQueue[0] : null
+    if (!targetItem) return
+
+    setIsSkipping(true)
+    try {
+      const response = await skipCustomer(formId, targetItem.token)
+      if (response && response.status) {
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        setSkippedItems([...skippedItems, { ...targetItem, time: timeStr, status: "Skipped" }])
+        setQueueItems(currentQueue.slice(1))
+        setWaiting((prev) => Math.max(0, prev - 1))
+      } else {
+        console.error("Failed to skip customer:", response?.message)
+      }
+    } catch (err) {
+      console.error("Error in Skip:", err)
+    } finally {
+      setIsSkipping(false)
     }
   }
 
-  const handleCancel = (id: string) => {
-    const itemToCancel = queueItems.find(item => item.id === id)
-    if (itemToCancel) {
-      setCompletedItems([...completedItems, { ...itemToCancel, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), status: "Cancelled" }])
-      setQueueItems(queueItems.filter(item => item.id !== id))
-      setWaiting(prev => Math.max(0, prev - 1))
+  const handleCancel = async (id: string, token: string, isServing = false) => {
+    if (!formId || !token) return
+    setCancellingId(id)
+    try {
+      const response = await cancelCustomer(formId, token)
+      if (response && response.status) {
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        if (isServing) {
+          const itemToCancel = servingItems.find((item) => item.id === id)
+          if (itemToCancel) {
+            setCompletedItems([
+              ...completedItems,
+              { ...itemToCancel, time: timeStr, status: "Cancelled" }
+            ])
+            setServingItems(servingItems.filter((item) => item.id !== id))
+          }
+        } else {
+          const itemToCancel = queueItems.find((item) => item.id === id)
+          if (itemToCancel) {
+            setCompletedItems([
+              ...completedItems,
+              { ...itemToCancel, time: timeStr, status: "Cancelled" }
+            ])
+            setQueueItems(queueItems.filter((item) => item.id !== id))
+            setWaiting((prev) => Math.max(0, prev - 1))
+          }
+        }
+      } else {
+        console.error("Failed to cancel customer:", response?.message)
+      }
+    } catch (err) {
+      console.error("Error in Cancel:", err)
+    } finally {
+      setCancellingId(null)
     }
   }
 
@@ -144,13 +246,51 @@ export function LiveQueuePage({ formId: propFormId }: LiveQueuePageProps = {}) {
         )}>
           Live Queue
         </h1>
-        <ActionButtons onCallNext={handleCallNext} onSkip={handleSkip} />
+        <ActionButtons
+          onCallNext={handleCallNext}
+          onSkip={handleSkip}
+          isCallingNext={isCallingNext}
+          isSkipping={isSkipping}
+        />
       </div>
 
       {/* Main Content - Two Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Side - Queue Lists (70%) */}
         <div className="lg:col-span-8 space-y-6">
+          {/* SERVING Section */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className={cn(
+                "tracking-wide text-sm font-medium transition-colors duration-200",
+                isDark ? "text-gray-400" : "text-gray-600"
+              )}>SERVING</h2>
+              <span className={cn(
+                "rounded-full px-2 py-0.5 text-xs transition-colors duration-200",
+                isDark
+                  ? "bg-white/10 border border-white/10 text-gray-300"
+                  : "bg-gray-100 border border-gray-200 text-gray-600"
+              )}>
+                {servingItems.length}
+              </span>
+            </div>
+            <div className="space-y-3">
+              {servingItems.map((item) => (
+                <QueueCard
+                  key={item.id}
+                  name={item.name}
+                  initials={item.initials}
+                  token={item.token}
+                  time={item.time}
+                  isServing={true}
+                  isCancelling={cancellingId === item.id}
+                  onCancel={() => handleCancel(item.id, item.token, true)}
+                  onClick={() => setSelectedPerson(item)}
+                />
+              ))}
+            </div>
+          </div>
+
           {/* IN QUEUE Section */}
           <div>
             <div className="flex items-center justify-between mb-4">
@@ -168,15 +308,16 @@ export function LiveQueuePage({ formId: propFormId }: LiveQueuePageProps = {}) {
               </span>
             </div>
             <div className="space-y-3">
-              {queueItems.map((item, index) => (
+              {queueItems.map((item) => (
                 <QueueCard
                   key={item.id}
                   name={item.name}
                   initials={item.initials}
                   token={item.token}
                   time={item.time}
-                  isServing={index === 0}
-                  onCancel={() => handleCancel(item.id)}
+                  isServing={false}
+                  isCancelling={cancellingId === item.id}
+                  onCancel={() => handleCancel(item.id, item.token, false)}
                   onClick={() => setSelectedPerson(item)}
                 />
               ))}

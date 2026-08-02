@@ -18,6 +18,13 @@ export default function ClientPageContent() {
   const [isUnauthorized, setIsUnauthorized] = useState(false)
   const [leaveMessage, setLeaveMessage] = useState<string | null>(null)
   const [isLeaving, setIsLeaving] = useState(false)
+  const [turnStatus, setTurnStatus] = useState<"YOUR_TURN" | "TURN_OVER" | null>(null)
+
+  const handleGoHome = () => {
+    localStorage.removeItem("client_access_token")
+    localStorage.removeItem("client_id")
+    router.push("/")
+  }
 
   const handleLeaveQueue = async () => {
     setIsLeaving(true)
@@ -39,8 +46,20 @@ export default function ClientPageContent() {
         const response = await reScanQR()
         if (response.status) {
           setIsUnauthorized(false)
-          localStorage.setItem("current_pos", String(response.current_pos))
-          localStorage.setItem("your_spot", String(response.your_spot))
+          const yourSpot = Number(response.your_spot)
+          const currentPos = Number(response.current_pos)
+
+          localStorage.setItem("current_pos", String(currentPos))
+          localStorage.setItem("your_spot", String(yourSpot))
+
+          if (yourSpot === currentPos) {
+            setTurnStatus("YOUR_TURN")
+          } else if (yourSpot < currentPos) {
+            setTurnStatus("TURN_OVER")
+          } else {
+            setTurnStatus(null)
+          }
+
           window.dispatchEvent(new Event("queueUpdate"))
         } else if (response.statusCode === 401) {
           setIsUnauthorized(true)
@@ -90,7 +109,43 @@ export default function ClientPageContent() {
               {leaveMessage}
             </p>
             <button 
-              onClick={() => router.push("/")}
+              onClick={handleGoHome}
+              className="px-6 py-2.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-semibold hover:opacity-90 transition-all duration-200 cursor-pointer shadow-lg shadow-indigo-500/25"
+            >
+              Go to Home
+            </button>
+          </div>
+        ) : turnStatus === "YOUR_TURN" ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
+            <div className="w-16 h-16 bg-green-500/10 border border-green-500/20 text-green-400 rounded-full flex items-center justify-center text-2xl font-bold animate-bounce">
+              🎉
+            </div>
+            <h2 className={clsx("text-2xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+              It's your turn now
+            </h2>
+            <p className={clsx("text-sm max-w-[280px] mx-auto", isDark ? "text-gray-400" : "text-gray-500")}>
+              Please proceed to the counter.
+            </p>
+            <button 
+              onClick={handleGoHome}
+              className="px-6 py-2.5 rounded-full bg-gradient-to-r from-green-600 to-emerald-600 text-white text-sm font-semibold hover:opacity-90 transition-all duration-200 cursor-pointer shadow-lg shadow-green-500/25"
+            >
+              Go to Home
+            </button>
+          </div>
+        ) : turnStatus === "TURN_OVER" ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
+            <div className="w-16 h-16 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-full flex items-center justify-center text-2xl font-bold">
+              ⌛
+            </div>
+            <h2 className={clsx("text-2xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+              Your turn is over
+            </h2>
+            <p className={clsx("text-sm max-w-[280px] mx-auto", isDark ? "text-gray-400" : "text-gray-500")}>
+              Your turn has passed. Thank you for waiting with us.
+            </p>
+            <button 
+              onClick={handleGoHome}
               className="px-6 py-2.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-semibold hover:opacity-90 transition-all duration-200 cursor-pointer shadow-lg shadow-indigo-500/25"
             >
               Go to Home
