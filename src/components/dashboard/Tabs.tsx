@@ -2,14 +2,22 @@
 
 import React, { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 const tabs = ["Overview", "Live Queue", "Activity"]
 
-export function Tabs() {
-  const [activeTab, setActiveTab] = useState("Overview")
+interface TabsProps {
+  activeTab?: string
+  onTabChange?: (tab: string) => void
+}
+
+export function Tabs({ activeTab: propActiveTab, onTabChange }: TabsProps = {}) {
+  const [internalActiveTab, setInternalActiveTab] = useState("Overview")
+  const activeTab = propActiveTab !== undefined ? propActiveTab : internalActiveTab
   const [isDark, setIsDark] = useState(true)
   const [mounted, setMounted] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     setMounted(true)
@@ -29,6 +37,18 @@ export function Tabs() {
     return () => observer.disconnect()
   }, [])
 
+  const handleTabClick = (tab: string) => {
+    if (propActiveTab === undefined) {
+      setInternalActiveTab(tab)
+    }
+    if (onTabChange) {
+      onTabChange(tab)
+    }
+    if (tab === "Live Queue") {
+      router.push("/dashboard/live-queue")
+    }
+  }
+
   return (
     <div className={`relative flex items-center gap-2 mb-8 p-1.5 backdrop-blur-xl border rounded-full w-max z-20 transition-colors duration-300 ${
       isDark 
@@ -46,7 +66,7 @@ export function Tabs() {
         return (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => handleTabClick(tab)}
             className={cn(
               "relative px-6 py-2.5 text-sm font-medium rounded-full transition-all duration-300",
               isActive 

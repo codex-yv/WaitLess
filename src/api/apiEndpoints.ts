@@ -13,6 +13,7 @@ export const homePage = {
 
 export const dasboardAdmin = {
     adminDashboard: 'api/admin/dashboard/',
+    adminDashboardActivity: 'api/admin/dashboard/activity',
     addCoordinator: 'api/admin/dashboard/add-coordinator',
     removeCoordinator: 'api/admin/dashboard/delete-coordinator',
     getCoordinators: 'api/admin/dashboard/show-coordinators'

@@ -106,3 +106,27 @@ export const removeCoordinator = async (email) => {
         throw error;
     }
 };
+
+/**
+ * Get admin dashboard activity data
+ * @returns {Promise<Object>} Response with status, message, and data (list of dicts)
+ */
+export const getAdminDashboardActivity = async () => {
+    try {
+        const token = localStorage.getItem('access_token');
+        
+        const response = await fetch(`${BACKEND_URL}/${dasboardAdmin.adminDashboardActivity}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Admin dashboard activity fetch error:', error);
+        throw error;
+    }
+};
