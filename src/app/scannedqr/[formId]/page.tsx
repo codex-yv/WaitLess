@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { scanQR, submitForm, reScanQR } from "@/api/api-functions/clientForm"
 import { cn } from "@/lib/utils"
 import { Sparkles, Clock, ChevronRight } from "lucide-react"
+import wsManager from "@/api/websocket"
 
 const parseFormsParams = (params: any): any[] => {
   if (!params) return []
@@ -163,6 +164,13 @@ export default function ScannedQRPage() {
         } catch (rescanErr) {
           console.error("Error during rescan after submit:", rescanErr)
         }
+
+        // Connect to WebSocket with the client_id for real-time queue updates
+        const clientId = localStorage.getItem("client_id")
+        if (clientId) {
+          wsManager.connect(clientId)
+        }
+
         router.push("/client")
       } else {
         setErrorMsg(response.message || response.error || "Failed to submit form.")

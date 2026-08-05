@@ -1,8 +1,9 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { FormCard } from "./FormCard"
 import { cn } from "@/lib/utils"
+import wsManager from "@/api/websocket"
 
 interface Form {
   _id: string
@@ -34,6 +35,8 @@ export function FormsList({
 }: FormsListProps) {
   const [isDark, setIsDark] = useState(true)
   const [mounted, setMounted] = useState(false)
+  // Track real-time scan count increments from WebSocket
+  const [scanIncrements, setScanIncrements] = useState<Record<string, number>>({})
 
   useEffect(() => {
     setMounted(true)
@@ -52,6 +55,23 @@ export function FormsList({
 
     return () => observer.disconnect()
   }, [])
+
+  // Listen for WebSocket `generate_form` events to increment scan count in real-time
+  const handleScanUpdate = useCallback((data: { loc: string; form_id: string }) => {
+    if (data.form_id) {
+      setScanIncrements((prev) => ({
+        ...prev,
+        [data.form_id]: (prev[data.form_id] || 0) + 1,
+      }))
+    }
+  }, [])
+
+  useEffect(() => {
+    wsManager.on("generate_form", handleScanUpdate)
+    return () => {
+      wsManager.off("generate_form", handleScanUpdate)
+    }
+  }, [handleScanUpdate])
 
   if (!mounted) return null
 
@@ -87,10 +107,11 @@ export function FormsList({
           {forms.map((form) => (
             <FormCard
               key={form._id}
+              formId={form._id}
               formName={form.title}
               status={form.expired ? "Expired" : (form.started ? "Active" : "Inactive")}
               createdDate={form.date}
-              scanCount={form.total_scans}
+              scanCount={form.total_scans + (scanIncrements[form._id] || 0)}
               onClick={() => onFormClick?.(form)}
               onPreview={() => onPreview?.(form)}
               onQR={() => onQR?.(form)}

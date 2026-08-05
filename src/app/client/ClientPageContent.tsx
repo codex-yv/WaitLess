@@ -11,6 +11,7 @@ import { reScanQR } from "@/api/api-functions/clientForm"
 import { cancelRegistration } from "@/api/api-functions/clientDash"
 import { useRouter } from "next/navigation"
 import clsx from "clsx"
+import wsManager from "@/api/websocket"
 
 export default function ClientPageContent() {
   const { isDark, mounted } = useTheme()
@@ -69,6 +70,53 @@ export default function ClientPageContent() {
       }
     }
     fetchStatus()
+  }, [mounted])
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    const clientId = localStorage.getItem("client_id")
+    if (clientId) {
+      wsManager.connect(clientId)
+    }
+
+    const handlePositionUpdate = (data: any) => {
+      if (data.your_spot && data.current_pos) {
+        const yourSpot = Number(data.your_spot)
+        const currentPos = Number(data.current_pos)
+
+        localStorage.setItem("current_pos", String(currentPos))
+        localStorage.setItem("your_spot", String(yourSpot))
+
+        if (yourSpot === currentPos) {
+          setTurnStatus("YOUR_TURN")
+        } else if (yourSpot < currentPos) {
+          setTurnStatus("TURN_OVER")
+        } else {
+          setTurnStatus(null)
+        }
+
+        window.dispatchEvent(new Event("queueUpdate"))
+      }
+    }
+
+    const handleCancel = () => {
+      setLeaveMessage("Your appointment has been cancelled by the admin")
+    }
+
+    const handleSkip = () => {
+      setLeaveMessage("Your appointment has been skipped contact the admin")
+    }
+
+    wsManager.on("client_dash_position", handlePositionUpdate)
+    wsManager.on("client_dash_cancel", handleCancel)
+    wsManager.on("client_dash_skip", handleSkip)
+
+    return () => {
+      wsManager.off("client_dash_position", handlePositionUpdate)
+      wsManager.off("client_dash_cancel", handleCancel)
+      wsManager.off("client_dash_skip", handleSkip)
+    }
   }, [mounted])
 
   if (!mounted) {

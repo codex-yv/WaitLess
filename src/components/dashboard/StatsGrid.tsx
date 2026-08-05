@@ -1,11 +1,12 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { motion } from "framer-motion"
 import { Users, UserPlus, CheckCircle2, AlertTriangle, MoreVertical } from "lucide-react"
 import { LineChart, Line, ResponsiveContainer } from "recharts"
 import { Card } from "@/components/ui/Card"
 import { cn } from "@/lib/utils"
+import wsManager from "@/api/websocket"
 
 const sparklineData = [
   { value: 1 },
@@ -24,6 +25,22 @@ interface StatsGridProps {
 export function StatsGrid({ dashboardData, loading }: StatsGridProps) {
   const [isDark, setIsDark] = useState(true)
   const [mounted, setMounted] = useState(false)
+  // Track real-time Total Clients increment from WebSocket
+  const [totalIncrement, setTotalIncrement] = useState(0)
+
+  // Listen for WebSocket `livequeue_cum_dashboard` events to increment Total Clients
+  const handleDashboardUpdate = useCallback((data: { loc: string; dashboard: any }) => {
+    if (data.dashboard) {
+      setTotalIncrement((prev) => prev + 1)
+    }
+  }, [])
+
+  useEffect(() => {
+    wsManager.on("livequeue_cum_dashboard", handleDashboardUpdate)
+    return () => {
+      wsManager.off("livequeue_cum_dashboard", handleDashboardUpdate)
+    }
+  }, [handleDashboardUpdate])
 
   // Calculate stats from dashboard data
   const stats = React.useMemo(() => {
@@ -89,7 +106,7 @@ export function StatsGrid({ dashboardData, loading }: StatsGridProps) {
     return [
       {
         title: "Total Clients",
-        value: total.toString(),
+        value: (total + totalIncrement).toString(),
         icon: Users,
         iconColor: "text-purple-400",
         iconBg: "bg-purple-500/12",
@@ -131,7 +148,7 @@ export function StatsGrid({ dashboardData, loading }: StatsGridProps) {
         isLive: false,
       },
     ]
-  }, [dashboardData, loading])
+  }, [dashboardData, loading, totalIncrement])
 
   useEffect(() => {
     setMounted(true)

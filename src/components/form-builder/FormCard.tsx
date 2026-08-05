@@ -5,6 +5,7 @@ import { Eye, QrCode } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface FormCardProps {
+  formId?: string
   formName: string
   status?: "Active" | "Inactive" | "Expired"
   createdDate: string
@@ -16,6 +17,7 @@ interface FormCardProps {
 }
 
 export function FormCard({
+  formId,
   formName,
   status = "Active",
   createdDate,

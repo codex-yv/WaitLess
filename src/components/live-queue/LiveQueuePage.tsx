@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { ActionButtons } from "./ActionButtons"
 import { QueueCard } from "./QueueCard"
 import { CompletedCard } from "./CompletedCard"
@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import { useTheme } from "@/contexts/ThemeContext"
 import { getLiveTracking, nextCustomer, skipCustomer, cancelCustomer } from "@/api/api-functions/adminTracking"
 import { useParams } from "next/navigation"
+import wsManager from "@/api/websocket"
 
 interface QueueItem {
   id: string
@@ -48,65 +49,70 @@ export function LiveQueuePage({ formId: propFormId }: LiveQueuePageProps = {}) {
   const [isSkipping, setIsSkipping] = useState(false)
   const [cancellingId, setCancellingId] = useState<string | null>(null)
 
+  // Reusable function to parse raw submissions array into categorized queue items
+  const processSubmissions = useCallback((rawData: any[]) => {
+    const allSubmissions = rawData.map((item: any) => {
+      const name = item.params_val?.[0]?.["Full Name"] || "Anonymous"
+      const initials = name
+        .split(" ")
+        .map((n: string) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+      
+      let status: "Completed" | "Cancelled" | "Skipped" | undefined = undefined
+      if (item.checked) status = "Completed"
+      else if (item.cancelled) status = "Cancelled"
+      else if (item.skipped) status = "Skipped"
+
+      return {
+        id: item._id,
+        name,
+        initials,
+        token: item.client_id,
+        time: item.submitted_at,
+        status,
+        checked: item.checked,
+        skipped: item.skipped,
+        cancelled: item.cancelled,
+        missed: item.missed,
+        serving: Boolean(item.serving),
+        params_val: item.params_val
+      }
+    })
+
+    const serving = allSubmissions.filter(
+      (item: any) => item.serving && !item.skipped && !item.cancelled && !item.missed
+    )
+    const inQueue = allSubmissions.filter(
+      (item: any) => !item.serving && !item.checked && !item.skipped && !item.cancelled && !item.missed
+    )
+    const completed = allSubmissions.filter(
+      (item: any) => !item.serving && (item.checked || item.cancelled || item.missed)
+    )
+    const skipped = allSubmissions.filter(
+      (item: any) => !item.serving && item.skipped && !item.checked && !item.cancelled && !item.missed
+    )
+
+    setServingItems(serving)
+    setQueueItems(inQueue)
+    setCompletedItems(completed)
+    setSkippedItems(skipped)
+
+    const total = allSubmissions.length
+    const completedCount = completed.filter((item: any) => item.checked).length
+    setWaiting(inQueue.length)
+    setServed(completedCount)
+    setCompletionRate(total > 0 ? Math.round((completedCount / total) * 100) : 0)
+  }, [])
+
   useEffect(() => {
     const fetchLiveQueue = async () => {
       if (!formId) return
       try {
         const response = await getLiveTracking(formId)
         if (response.status && response.data) {
-          const allSubmissions = response.data.map((item: any) => {
-            const name = item.params_val?.[0]?.["Full Name"] || "Anonymous"
-            const initials = name
-              .split(" ")
-              .map((n: string) => n[0])
-              .join("")
-              .toUpperCase()
-              .slice(0, 2)
-            
-            let status: "Completed" | "Cancelled" | "Skipped" | undefined = undefined
-            if (item.checked) status = "Completed"
-            else if (item.cancelled) status = "Cancelled"
-            else if (item.skipped) status = "Skipped"
-
-            return {
-              id: item._id,
-              name,
-              initials,
-              token: item.client_id,
-              time: item.submitted_at,
-              status,
-              checked: item.checked,
-              skipped: item.skipped,
-              cancelled: item.cancelled,
-              missed: item.missed,
-              serving: Boolean(item.serving),
-              params_val: item.params_val
-            }
-          })
-
-          const serving = allSubmissions.filter(
-            (item: any) => item.serving && !item.skipped && !item.cancelled && !item.missed
-          )
-          const inQueue = allSubmissions.filter(
-            (item: any) => !item.serving && !item.checked && !item.skipped && !item.cancelled && !item.missed
-          )
-          const completed = allSubmissions.filter(
-            (item: any) => !item.serving && (item.checked || item.cancelled || item.missed)
-          )
-          const skipped = allSubmissions.filter(
-            (item: any) => !item.serving && item.skipped && !item.checked && !item.cancelled && !item.missed
-          )
-
-          setServingItems(serving)
-          setQueueItems(inQueue)
-          setCompletedItems(completed)
-          setSkippedItems(skipped)
-
-          const total = allSubmissions.length
-          const completedCount = completed.filter((item: any) => item.checked).length
-          setWaiting(inQueue.length)
-          setServed(completedCount)
-          setCompletionRate(total > 0 ? Math.round((completedCount / total) * 100) : 0)
+          processSubmissions(response.data)
         }
       } catch (error) {
         console.error("Error loading live tracking:", error)
@@ -116,7 +122,21 @@ export function LiveQueuePage({ formId: propFormId }: LiveQueuePageProps = {}) {
     if (mounted && formId) {
       fetchLiveQueue()
     }
-  }, [mounted, formId])
+  }, [mounted, formId, processSubmissions])
+
+  // Listen for WebSocket `livequeue_cum_dashboard` events for real-time queue updates
+  const handleLiveQueueUpdate = useCallback((data: { loc: string; live_queue: any[]; dashboard: any }) => {
+    if (data.live_queue) {
+      processSubmissions(data.live_queue)
+    }
+  }, [processSubmissions])
+
+  useEffect(() => {
+    wsManager.on("livequeue_cum_dashboard", handleLiveQueueUpdate)
+    return () => {
+      wsManager.off("livequeue_cum_dashboard", handleLiveQueueUpdate)
+    }
+  }, [handleLiveQueueUpdate])
 
   const handleCallNext = async () => {
     if (!formId) return

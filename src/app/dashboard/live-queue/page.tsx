@@ -1,10 +1,11 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { Users } from "lucide-react"
 import { LiveQueueCard } from "@/components/live-queue/LiveQueueCard"
 import { cn } from "@/lib/utils"
 import { getForms } from "@/api/api-functions/adminForms"
+import wsManager from "@/api/websocket"
 
 interface Form {
   id: string
@@ -19,6 +20,25 @@ export default function LiveQueuePage() {
   const [mounted, setMounted] = useState(false)
   const [forms, setForms] = useState<Form[]>([])
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null)
+  // Track real-time scan count increments from WebSocket
+  const [scanIncrements, setScanIncrements] = useState<Record<string, number>>({})
+
+  // Listen for WebSocket `generate_form` events to increment scan count in real-time
+  const handleScanUpdate = useCallback((data: { loc: string; form_id: string }) => {
+    if (data.form_id) {
+      setScanIncrements((prev) => ({
+        ...prev,
+        [data.form_id]: (prev[data.form_id] || 0) + 1,
+      }))
+    }
+  }, [])
+
+  useEffect(() => {
+    wsManager.on("generate_form", handleScanUpdate)
+    return () => {
+      wsManager.off("generate_form", handleScanUpdate)
+    }
+  }, [handleScanUpdate])
 
   useEffect(() => {
     setMounted(true)
@@ -94,11 +114,10 @@ export default function LiveQueuePage() {
 
       {/* Error/Success Message */}
       {message && (
-        <div className={`p-4 rounded-xl text-sm font-medium backdrop-blur-sm border mb-4 ${
-          message.type === "success"
+        <div className={`p-4 rounded-xl text-sm font-medium backdrop-blur-sm border mb-4 ${message.type === "success"
             ? "bg-green-500/10 border-green-500/20 text-green-400"
             : "bg-red-500/10 border-red-500/20 text-red-400"
-        }`}>
+          }`}>
           {message.text}
         </div>
       )}
@@ -108,12 +127,12 @@ export default function LiveQueuePage() {
         {/* Section Label */}
         <div className="flex items-center gap-3 mb-6">
           <h2 className={cn(
-            "text-l font-bold transition-colors duration-300", 
+            "text-l font-bold transition-colors duration-300",
             isDark ? "text-white" : "text-gray-900"
           )}>ALL FORMS</h2>
           <span className={cn("px-2 py-0.5 rounded-full",
-            isDark 
-              ? "bg-purple-500/20 border border-purple-500/30" 
+            isDark
+              ? "bg-purple-500/20 border border-purple-500/30"
               : "bg-purple-500/35 border border-purple-500/45")}>
             <span className={cn("text-sm font-medium transition-colors duration-300",
               isDark ? "text-purple-300" : "text-purple-700")}>{forms.length}</span>
@@ -129,7 +148,7 @@ export default function LiveQueuePage() {
               formName={form.name}
               status={form.status}
               createdDate={form.createdDate}
-              scanCount={form.scanCount}
+              scanCount={form.scanCount + (scanIncrements[form.id] || 0)}
             />
           ))}
         </div>
