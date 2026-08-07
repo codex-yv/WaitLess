@@ -1,11 +1,11 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import TrustBar from "@/components/TrustBar";
+// import TrustBar from "@/components/TrustBar";
 import LifestyleSection from "@/components/LifestyleSection";
 import Features from "@/components/Features";
 import AdminSection from "@/components/AdminSection";
 import UseCases from "@/components/UseCases";
-import Testimonials from "@/components/Testimonials";
+// import Testimonials from "@/components/Testimonials";
 import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
 
@@ -79,12 +79,12 @@ export default function Landing() {
         <Navbar />
         <main>
           <Hero />
-          <TrustBar />
+          {/* <TrustBar /> */}
           <LifestyleSection />
           <Features />
           <AdminSection />
           <UseCases />
-          <Testimonials />
+          {/* <Testimonials /> */}
           <FinalCTA />
         </main>
         <Footer />

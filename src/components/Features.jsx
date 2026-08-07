@@ -80,10 +80,10 @@ export default function Features() {
               Real-time position
             </h3>
             <p className={`mt-2 text-sm ${theme === "light" ? "text-gray-600" : "text-zinc-400"}`}>
-              Watch your place in line update live — with ETA to the minute.
+              Watch your position in line stay updated live.
             </p>
             <div className="mt-6 space-y-2">
-              {["#3 · You", "#4 · Ibrahim", "#5 · Priya"].map((t, i) => (
+              {["#3 · You", "#4 · Shivam", "#5 · Priya"].map((t, i) => (
                 <div
                   key={t}
                   className={`text-xs px-3 py-1.5 rounded-md border ${theme === "light"
@@ -120,7 +120,7 @@ export default function Features() {
                   Smart alerts that never miss
                 </h3>
                 <p className={`mt-2 max-w-md ${theme === "light" ? "text-gray-600" : "text-zinc-400"}`}>
-                  Tiered notifications — SMS, WhatsApp, push — nudge you at
+                  We notify you at
                   exactly the right moment so you arrive just-in-time.
                 </p>
                 <div className={`mt-6 flex items-center gap-2 text-xs ${theme === "light" ? "text-gray-600" : "text-zinc-400"}`}>
@@ -160,7 +160,7 @@ export default function Features() {
               Ops dashboard
             </h3>
             <p className={`mt-2 text-sm ${theme === "light" ? "text-gray-600" : "text-zinc-400"}`}>
-              Staff get a clean console to call-next, pause, and reassign —
+              Staff get a clean console to call-next, skip, and cancel
               with live wait-time analytics.
             </p>
             <div className="mt-5 grid grid-cols-3 gap-2 text-center">

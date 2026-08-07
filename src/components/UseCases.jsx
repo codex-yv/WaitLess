@@ -9,33 +9,25 @@ const cases = [
     id: "banks",
     icon: Building2,
     title: "Banks",
-    text: "Eliminate lobby congestion. Customers join from the parking lot, the café, or from home.",
-    stat: "-48%",
-    statLabel: "avg. branch wait",
+    text: "Minimize lobby congestion by replacing physical queues with virtual waiting. Customers can sit comfortably and be notified when their turn approaches.",
   },
   {
     id: "hospitals",
     icon: HeartPulse,
     title: "Hospitals & Clinics",
-    text: "Reduce crowded waiting rooms. Patients arrive just in time for their turn — safer and calmer.",
-    stat: "+3.2x",
-    statLabel: "rooms throughput",
+    text: "Create calmer, less crowded waiting areas. Patients can track their queue status and arrive when it’s almost time for their appointment.",
   },
   {
     id: "governmentoffices",
     icon: Landmark,
     title: "Government Offices",
-    text: "Modernize counter services with a friction-free digital token system that works on any phone.",
-    stat: "62%",
-    statLabel: "fewer walk-outs",
+    text: "Give visitors the freedom to use their waiting time productively. They can step away, complete other tasks, and return when their turn is near.",
   },
   {
     id: "salonsstudios",
     icon: Scissors,
     title: "Salons & Studios",
-    text: "Walk-in magic without the chaos. Clients get a live ETA and you stay fully booked.",
-    stat: "4.9",
-    statLabel: "customer CSAT",
+    text: "No more sitting around waiting for your turn. Customers can join the queue remotely and leave home when it’s almost time to be served.",
   },
 ];
 
@@ -96,21 +88,19 @@ export default function UseCases() {
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.5, delay: i * 0.06 }}
               data-testid={`usecase-${c.id}`}
-              className={`rounded-2xl p-6 md:p-7 flex items-start gap-5 relative overflow-hidden transition-all duration-300 ${
-                theme === "light"
-                  ? "bg-white/70 backdrop-blur-lg border border-white/40 shadow-lg hover:shadow-xl hover:bg-white/80 hover:-translate-y-1"
-                  : "glass hover:bg-white/[0.06] transition-colors"
-              }`}
+              className={`rounded-2xl p-6 md:p-7 flex items-start gap-5 relative overflow-hidden transition-all duration-300 ${theme === "light"
+                ? "bg-white/70 backdrop-blur-lg border border-white/40 shadow-lg hover:shadow-xl hover:bg-white/80 hover:-translate-y-1"
+                : "glass hover:bg-white/[0.06] transition-colors"
+                }`}
             >
               {/* Top edge highlight for light mode */}
               {theme === "light" && (
                 <div className="absolute inset-x-0 top-0 h-[2px] rounded-t-2xl bg-gradient-to-r from-white/80 via-gray-200 to-white/80 pointer-events-none" />
               )}
-              <div className={`w-12 h-12 shrink-0 rounded-xl grid place-items-center ${
-                theme === "light"
-                  ? "bg-gradient-to-br from-blue-400/40 to-purple-400/30 border border-gray-300"
-                  : "bg-gradient-to-br from-blue-500/25 via-purple-500/25 to-teal-400/25 border border-white/10"
-              }`}>
+              <div className={`w-12 h-12 shrink-0 rounded-xl grid place-items-center ${theme === "light"
+                ? "bg-gradient-to-br from-blue-400/40 to-purple-400/30 border border-gray-300"
+                : "bg-gradient-to-br from-blue-500/25 via-purple-500/25 to-teal-400/25 border border-white/10"
+                }`}>
                 <c.icon className={`w-5 h-5 ${theme === "light" ? "text-gray-900" : "text-white"}`} strokeWidth={1.8} />
               </div>
               <div className="flex-1">
@@ -118,14 +108,6 @@ export default function UseCases() {
                 <p className={`mt-1.5 text-sm leading-relaxed ${theme === "light" ? "text-gray-600" : "text-zinc-400"}`}>
                   {c.text}
                 </p>
-              </div>
-              <div className="hidden sm:block text-right shrink-0">
-                <div className={`font-satoshi font-bold text-2xl gradient-text ${theme === "light" ? "text-gray-900" : ""}`}>
-                  {c.stat}
-                </div>
-                <div className={`text-[10px] uppercase tracking-wider ${theme === "light" ? "text-gray-500" : "text-zinc-500"}`}>
-                  {c.statLabel}
-                </div>
               </div>
             </motion.div>
           ))}
