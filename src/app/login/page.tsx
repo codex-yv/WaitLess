@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Zap, Sun, Moon, Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Sun, Moon, Eye, EyeOff } from "lucide-react";
+import logo1 from "@/assets/logo1.png";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
@@ -177,9 +178,8 @@ function LoginPageContent() {
   return (
     <div
       data-testid="login-page"
-      className={`relative min-h-screen flex items-center justify-center overflow-hidden transition-colors duration-500 ${
-        isDark ? "bg-[#07070a]" : "bg-[#f5f6fa]"
-      }`}
+      className={`relative min-h-screen flex items-center justify-center overflow-hidden transition-colors duration-500 ${isDark ? "bg-[#07070a]" : "bg-[#f5f6fa]"
+        }`}
     >
       {/* ═══════════════════ BACKGROUND LAYER ═══════════════════ */}
 
@@ -213,9 +213,8 @@ function LoginPageContent() {
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
-            className={`absolute rounded-full login-particle login-particle-${i + 1} ${
-              isDark ? "bg-blue-400/30" : "bg-blue-400/15"
-            }`}
+            className={`absolute rounded-full login-particle login-particle-${i + 1} ${isDark ? "bg-blue-400/30" : "bg-blue-400/15"
+              }`}
             style={{
               width: `${3 + Math.random() * 4}px`,
               height: `${3 + Math.random() * 4}px`,
@@ -232,10 +231,9 @@ function LoginPageContent() {
         <span
           className={`font-satoshi font-black tracking-tighter leading-[0.8] whitespace-nowrap
             text-[28vw] md:text-[22vw] lg:text-[19vw]
-            bg-clip-text text-transparent translate-y-[18%] ${
-              isDark
-                ? "bg-[linear-gradient(180deg,rgba(96,165,250,0.22)_0%,rgba(192,132,252,0.14)_45%,rgba(34,211,238,0.05)_80%,transparent_100%)]"
-                : "bg-[linear-gradient(180deg,rgba(59,130,246,0.15)_0%,rgba(168,85,247,0.12)_45%,rgba(34,211,238,0.08)_80%,transparent_100%)]"
+            bg-clip-text text-transparent translate-y-[18%] ${isDark
+              ? "bg-[linear-gradient(180deg,rgba(96,165,250,0.22)_0%,rgba(192,132,252,0.14)_45%,rgba(34,211,238,0.05)_80%,transparent_100%)]"
+              : "bg-[linear-gradient(180deg,rgba(59,130,246,0.15)_0%,rgba(168,85,247,0.12)_45%,rgba(34,211,238,0.08)_80%,transparent_100%)]"
             }`}
           style={{
             WebkitTextStroke: isDark
@@ -254,11 +252,10 @@ function LoginPageContent() {
         transition={{ delay: 0.3, duration: 0.4 }}
         onClick={toggleTheme}
         data-testid="login-theme-toggle"
-        className={`fixed top-6 right-6 z-50 p-2.5 rounded-xl transition-all duration-300 ${
-          isDark
-            ? "text-zinc-300 hover:text-white hover:bg-white/10 border border-white/10"
-            : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-gray-200"
-        }`}
+        className={`fixed top-6 right-6 z-50 p-2.5 rounded-xl transition-all duration-300 ${isDark
+          ? "text-zinc-300 hover:text-white hover:bg-white/10 border border-white/10"
+          : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-gray-200"
+          }`}
         aria-label="Toggle theme"
       >
         {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -289,11 +286,10 @@ function LoginPageContent() {
 
         <div
           data-testid="login-card"
-          className={`relative rounded-2xl p-8 md:p-10 login-card-float ${
-            isDark
-              ? "backdrop-blur-xl border border-white/[0.08]"
-              : "bg-white/70 backdrop-blur-xl border border-white/50 shadow-[0_20px_60px_rgba(0,0,0,0.08),0_1px_3px_rgba(0,0,0,0.04)]"
-          }`}
+          className={`relative rounded-2xl p-8 md:p-10 login-card-float ${isDark
+            ? "backdrop-blur-xl border border-white/[0.08]"
+            : "bg-white/70 backdrop-blur-xl border border-white/50 shadow-[0_20px_60px_rgba(0,0,0,0.08),0_1px_3px_rgba(0,0,0,0.04)]"
+            }`}
           style={isDark ? {
             background: 'rgba(255,255,255,0.04)',
             outline: '1px solid rgba(255,255,255,0.06)',
@@ -353,15 +349,11 @@ function LoginPageContent() {
               {isDark && (
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-teal-400 blur-lg opacity-40" />
               )}
-              <div
-                className={`relative w-14 h-14 rounded-2xl grid place-items-center bg-gradient-to-br from-blue-500 via-purple-500 to-teal-400 ${
-                  isDark
-                    ? "shadow-[0_8px_30px_rgba(157,76,221,0.4)]"
-                    : "shadow-[0_6px_24px_rgba(157,76,221,0.3)]"
-                }`}
-              >
-                <Zap className="w-6 h-6 text-white" strokeWidth={2.5} />
-              </div>
+              <img
+                src={typeof logo1 === "string" ? logo1 : logo1.src}
+                alt="WaitLess"
+                className="relative h-14 w-auto object-contain scale-[3.5]"
+              />
             </div>
           </motion.div>
 
@@ -374,16 +366,14 @@ function LoginPageContent() {
           >
             <h1
               data-testid="login-heading"
-              className={`font-satoshi text-3xl font-bold tracking-tight ${
-                isDark ? "text-white" : "text-gray-900"
-              }`}
+              className={`font-satoshi text-3xl font-bold tracking-tight ${isDark ? "text-white" : "text-gray-900"
+                }`}
             >
               Welcome back
             </h1>
             <p
-              className={`mt-2 text-sm ${
-                isDark ? "text-zinc-400" : "text-gray-500"
-              }`}
+              className={`mt-2 text-sm ${isDark ? "text-zinc-400" : "text-gray-500"
+                }`}
             >
               Please enter your details to sign in.
             </p>
@@ -397,25 +387,22 @@ function LoginPageContent() {
           >
             <div
               data-testid="login-email-wrapper"
-              className={`relative rounded-xl transition-all duration-300 ${
-                emailFocused
-                  ? isDark
-                    ? "shadow-[0_0_0_2px_rgba(96,165,250,0.3),0_0_20px_rgba(96,165,250,0.1)]"
-                    : "shadow-[0_0_0_2px_rgba(59,130,246,0.25),0_0_20px_rgba(59,130,246,0.08)]"
-                  : ""
-              } ${
-                isDark
+              className={`relative rounded-xl transition-all duration-300 ${emailFocused
+                ? isDark
+                  ? "shadow-[0_0_0_2px_rgba(96,165,250,0.3),0_0_20px_rgba(96,165,250,0.1)]"
+                  : "shadow-[0_0_0_2px_rgba(59,130,246,0.25),0_0_20px_rgba(59,130,246,0.08)]"
+                : ""
+                } ${isDark
                   ? "bg-white/[0.04] border border-white/[0.08]"
                   : "bg-white/80 border border-gray-200"
-              }`}
+                }`}
             >
               <label
                 htmlFor="login-email"
-                className={`absolute left-4 transition-all duration-200 pointer-events-none ${
-                  emailFocused || email
-                    ? `top-2 text-[10px] ${isDark ? "text-blue-400" : "text-blue-500"}`
-                    : `top-1/2 -translate-y-1/2 text-sm ${isDark ? "text-zinc-500" : "text-gray-400"}`
-                }`}
+                className={`absolute left-4 transition-all duration-200 pointer-events-none ${emailFocused || email
+                  ? `top-2 text-[10px] ${isDark ? "text-blue-400" : "text-blue-500"}`
+                  : `top-1/2 -translate-y-1/2 text-sm ${isDark ? "text-zinc-500" : "text-gray-400"}`
+                  }`}
               >
                 Email
               </label>
@@ -428,9 +415,8 @@ function LoginPageContent() {
                 onChange={(e) => setEmail(e.target.value)}
                 onFocus={() => setEmailFocused(true)}
                 onBlur={() => setEmailFocused(false)}
-                className={`w-full bg-transparent pt-6 pb-3 px-4 text-sm rounded-xl outline-none ${
-                  isDark ? "text-white" : "text-gray-900"
-                }`}
+                className={`w-full bg-transparent pt-6 pb-3 px-4 text-sm rounded-xl outline-none ${isDark ? "text-white" : "text-gray-900"
+                  }`}
                 autoComplete="email"
               />
             </div>
@@ -445,25 +431,22 @@ function LoginPageContent() {
           >
             <div
               data-testid="login-password-wrapper"
-              className={`relative rounded-xl transition-all duration-300 ${
-                passwordFocused
-                  ? isDark
-                    ? "shadow-[0_0_0_2px_rgba(96,165,250,0.3),0_0_20px_rgba(96,165,250,0.1)]"
-                    : "shadow-[0_0_0_2px_rgba(59,130,246,0.25),0_0_20px_rgba(59,130,246,0.08)]"
-                  : ""
-              } ${
-                isDark
+              className={`relative rounded-xl transition-all duration-300 ${passwordFocused
+                ? isDark
+                  ? "shadow-[0_0_0_2px_rgba(96,165,250,0.3),0_0_20px_rgba(96,165,250,0.1)]"
+                  : "shadow-[0_0_0_2px_rgba(59,130,246,0.25),0_0_20px_rgba(59,130,246,0.08)]"
+                : ""
+                } ${isDark
                   ? "bg-white/[0.04] border border-white/[0.08]"
                   : "bg-white/80 border border-gray-200"
-              }`}
+                }`}
             >
               <label
                 htmlFor="login-password"
-                className={`absolute left-4 transition-all duration-200 pointer-events-none ${
-                  passwordFocused || password
-                    ? `top-2 text-[10px] ${isDark ? "text-blue-400" : "text-blue-500"}`
-                    : `top-1/2 -translate-y-1/2 text-sm ${isDark ? "text-zinc-500" : "text-gray-400"}`
-                }`}
+                className={`absolute left-4 transition-all duration-200 pointer-events-none ${passwordFocused || password
+                  ? `top-2 text-[10px] ${isDark ? "text-blue-400" : "text-blue-500"}`
+                  : `top-1/2 -translate-y-1/2 text-sm ${isDark ? "text-zinc-500" : "text-gray-400"}`
+                  }`}
               >
                 Password
               </label>
@@ -475,20 +458,18 @@ function LoginPageContent() {
                 onChange={(e) => setPassword(e.target.value)}
                 onFocus={() => setPasswordFocused(true)}
                 onBlur={() => setPasswordFocused(false)}
-                className={`w-full bg-transparent pt-6 pb-3 px-4 pr-14 text-sm rounded-xl outline-none ${
-                  isDark ? "text-white" : "text-gray-900"
-                }`}
+                className={`w-full bg-transparent pt-6 pb-3 px-4 pr-14 text-sm rounded-xl outline-none ${isDark ? "text-white" : "text-gray-900"
+                  }`}
                 autoComplete="current-password"
               />
               <button
                 data-testid="login-password-toggle"
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className={`absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-lg grid place-items-center transition-all duration-200 ${
-                  isDark
-                    ? "text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.06]"
-                    : "text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-                }`}
+                className={`absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-lg grid place-items-center transition-all duration-200 ${isDark
+                  ? "text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.06]"
+                  : "text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                  }`}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -506,13 +487,12 @@ function LoginPageContent() {
               data-testid="login-remember-checkbox"
               type="button"
               onClick={() => setRememberMe(!rememberMe)}
-              className={`w-[18px] h-[18px] rounded-[5px] border-2 flex items-center justify-center transition-all duration-200 ${
-                rememberMe
-                  ? "bg-gradient-to-br from-blue-500 to-purple-500 border-transparent"
-                  : isDark
-                    ? "border-white/20 hover:border-white/40"
-                    : "border-gray-300 hover:border-gray-400"
-              }`}
+              className={`w-[18px] h-[18px] rounded-[5px] border-2 flex items-center justify-center transition-all duration-200 ${rememberMe
+                ? "bg-gradient-to-br from-blue-500 to-purple-500 border-transparent"
+                : isDark
+                  ? "border-white/20 hover:border-white/40"
+                  : "border-gray-300 hover:border-gray-400"
+                }`}
             >
               {rememberMe && (
                 <motion.svg
@@ -533,9 +513,8 @@ function LoginPageContent() {
               )}
             </button>
             <span
-              className={`text-sm ${
-                isDark ? "text-zinc-400" : "text-gray-500"
-              }`}
+              className={`text-sm ${isDark ? "text-zinc-400" : "text-gray-500"
+                }`}
             >
               Remember me
             </span>
@@ -578,25 +557,22 @@ function LoginPageContent() {
             className="flex items-center gap-4 my-6"
           >
             <div
-              className={`flex-1 h-px ${
-                isDark
-                  ? "bg-gradient-to-r from-transparent to-white/10"
-                  : "bg-gradient-to-r from-transparent to-gray-200"
-              }`}
+              className={`flex-1 h-px ${isDark
+                ? "bg-gradient-to-r from-transparent to-white/10"
+                : "bg-gradient-to-r from-transparent to-gray-200"
+                }`}
             />
             <span
-              className={`text-xs font-medium ${
-                isDark ? "text-zinc-500" : "text-gray-400"
-              }`}
+              className={`text-xs font-medium ${isDark ? "text-zinc-500" : "text-gray-400"
+                }`}
             >
               OR
             </span>
             <div
-              className={`flex-1 h-px ${
-                isDark
-                  ? "bg-gradient-to-l from-transparent to-white/10"
-                  : "bg-gradient-to-l from-transparent to-gray-200"
-              }`}
+              className={`flex-1 h-px ${isDark
+                ? "bg-gradient-to-l from-transparent to-white/10"
+                : "bg-gradient-to-l from-transparent to-gray-200"
+                }`}
             />
           </motion.div>
 
@@ -614,11 +590,10 @@ function LoginPageContent() {
               disabled={isLoading}
               onMouseEnter={() => setHoveredBtn("google")}
               onMouseLeave={() => setHoveredBtn(null)}
-              className={`group relative w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-300 ${
-                isDark
-                  ? "bg-white/[0.04] border border-white/[0.08] text-zinc-300 hover:bg-white/[0.08] hover:border-white/[0.15] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)]"
-                  : "bg-white/80 border border-gray-200 text-gray-700 hover:bg-white hover:border-gray-300 hover:text-gray-900 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+              className={`group relative w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-300 ${isDark
+                ? "bg-white/[0.04] border border-white/[0.08] text-zinc-300 hover:bg-white/[0.08] hover:border-white/[0.15] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)]"
+                : "bg-white/80 border border-gray-200 text-gray-700 hover:bg-white hover:border-gray-300 hover:text-gray-900 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {/* Google Icon */}
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -641,11 +616,10 @@ function LoginPageContent() {
               </svg>
               <span>Continue with Google</span>
               <ArrowRight
-                className={`w-4 h-4 ml-auto transition-all duration-300 ${
-                  hoveredBtn === "google"
-                    ? "translate-x-0 opacity-100"
-                    : "-translate-x-1 opacity-40"
-                }`}
+                className={`w-4 h-4 ml-auto transition-all duration-300 ${hoveredBtn === "google"
+                  ? "translate-x-0 opacity-100"
+                  : "-translate-x-1 opacity-40"
+                  }`}
               />
             </button>
 
@@ -656,9 +630,8 @@ function LoginPageContent() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.65, duration: 0.5 }}
-            className={`mt-8 text-center text-sm ${
-              isDark ? "text-zinc-500" : "text-gray-500"
-            }`}
+            className={`mt-8 text-center text-sm ${isDark ? "text-zinc-500" : "text-gray-500"
+              }`}
           >
             Don&apos;t have an account?{" "}
             <Link
@@ -682,11 +655,10 @@ function LoginPageContent() {
         <Link
           href="/"
           data-testid="login-back-home"
-          className={`flex items-center gap-2 text-sm px-4 py-2 rounded-xl transition-all duration-300 ${
-            isDark
-              ? "text-zinc-400 hover:text-white hover:bg-white/10 border border-white/10"
-              : "text-gray-500 hover:text-gray-900 hover:bg-gray-100 border border-gray-200"
-          }`}
+          className={`flex items-center gap-2 text-sm px-4 py-2 rounded-xl transition-all duration-300 ${isDark
+            ? "text-zinc-400 hover:text-white hover:bg-white/10 border border-white/10"
+            : "text-gray-500 hover:text-gray-900 hover:bg-gray-100 border border-gray-200"
+            }`}
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 12H5M12 19l-7-7 7-7" />

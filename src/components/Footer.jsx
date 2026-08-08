@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Zap, ExternalLink, Mail, Rss } from "lucide-react";
+import { ExternalLink, Mail, Rss } from "lucide-react";
+import logo3 from "@/assets/logo3.png";
 
 const groups = [
   {
@@ -51,15 +52,13 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-5 md:px-8">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-10">
           <div className="col-span-2">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg grid place-items-center bg-gradient-to-br from-blue-500 via-purple-500 to-teal-400">
-                <Zap className="w-4 h-4 text-white" strokeWidth={2.5} />
-              </div>
-              <span className={`font-satoshi font-bold text-lg ${theme === "light" ? "text-gray-900" : ""}`}>WaitLess</span>
-            </div>
-            <p className={`mt-4 text-sm max-w-xs leading-relaxed ${
-              theme === "light" ? "text-gray-600" : "text-zinc-400"
-            }`}>
+            <img
+              src={logo3.src || logo3}
+              alt="WaitLess"
+              className="h-15 w-auto object-contain rounded-xl"
+            />
+            <p className={`mt-4 text-sm max-w-xs leading-relaxed ${theme === "light" ? "text-gray-600" : "text-zinc-400"
+              }`}>
               Smart digital queues for modern businesses. Skip the line, own
               your time.
             </p>
@@ -69,11 +68,10 @@ export default function Footer() {
                   key={i}
                   href="#"
                   data-testid={`footer-social-${i}`}
-                  className={`w-9 h-9 rounded-lg grid place-items-center transition-colors ${
-                    theme === "light"
-                      ? "bg-white/70 backdrop-blur-lg border border-white/40 shadow-lg hover:shadow-xl hover:bg-white/80"
-                      : "glass hover:bg-white/10"
-                  }`}
+                  className={`w-9 h-9 rounded-lg grid place-items-center transition-colors ${theme === "light"
+                    ? "bg-white/70 backdrop-blur-lg border border-white/40 shadow-lg hover:shadow-xl hover:bg-white/80"
+                    : "glass hover:bg-white/10"
+                    }`}
                 >
                   <Icon className={`w-4 h-4 ${theme === "light" ? "text-gray-600" : "text-zinc-300"}`} />
                 </a>
@@ -83,9 +81,8 @@ export default function Footer() {
 
           {groups.map((g) => (
             <div key={g.title}>
-              <p className={`text-xs uppercase tracking-[0.2em] ${
-                theme === "light" ? "text-gray-500" : "text-zinc-500"
-              }`}>
+              <p className={`text-xs uppercase tracking-[0.2em] ${theme === "light" ? "text-gray-500" : "text-zinc-500"
+                }`}>
                 {g.title}
               </p>
               <ul className="mt-4 space-y-2.5">
@@ -93,11 +90,10 @@ export default function Footer() {
                   <li key={l}>
                     <a
                       href="#"
-                      className={`text-sm transition-colors ${
-                        theme === "light"
-                          ? "text-gray-600 hover:text-gray-900"
-                          : "text-zinc-300 hover:text-white"
-                      }`}
+                      className={`text-sm transition-colors ${theme === "light"
+                        ? "text-gray-600 hover:text-gray-900"
+                        : "text-zinc-300 hover:text-white"
+                        }`}
                     >
                       {l}
                     </a>
@@ -109,11 +105,10 @@ export default function Footer() {
         </div>
 
         <div className="mt-16 pt-8 border-t border-white/5">
-          <div className={`font-satoshi text-[16vw] md:text-[14vw] leading-none font-bold tracking-tighter bg-clip-text text-transparent select-none pointer-events-none ${
-            theme === "light"
-              ? "bg-gradient-to-b from-gray-400/10 via-gray-300/5 to-transparent"
-              : "bg-gradient-to-b from-white/10 via-white/5 to-transparent"
-          }`}>
+          <div className={`font-satoshi text-[16vw] md:text-[14vw] leading-none font-bold tracking-tighter bg-clip-text text-transparent select-none pointer-events-none ${theme === "light"
+            ? "bg-gradient-to-b from-gray-400/10 via-gray-300/5 to-transparent"
+            : "bg-gradient-to-b from-white/10 via-white/5 to-transparent"
+            }`}>
             WaitLess
           </div>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mt-4">

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Building2, HeartPulse, Landmark, Scissors } from "lucide-react";
 import { useState, useEffect } from "react";
+import logo2 from "@/assets/logo2.png";
 
 const cases = [
   {
@@ -70,13 +71,15 @@ export default function UseCases() {
             From front-desk chaos to calm, choreographed flow — the same
             platform adapts to your world in minutes.
           </p>
-          <a
-            href="#cta"
-            data-testid="usecase-cta"
-            className="btn-ghost mt-7 inline-flex"
-          >
-            Bring WaitLess to your business
-          </a>
+
+          <div className="mt-8 flex justify-center">
+            <img
+              src={logo2.src || logo2}
+              alt="WaitLess Logo"
+              className="h-32 md:h-40 mt-30 w-auto object-contain scale-[3.2]"
+            />
+          </div>
+
         </div>
 
         <div className="space-y-4">

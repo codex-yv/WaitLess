@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import { Play, ArrowRight, Rocket, BellRing, Timer, QrCode, CheckCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
+import clientDashLight from "@/assets/promotions/client_dash.png";
+import clientDashDark from "@/assets/promotions/client_dash_dark.png";
 
 export default function Hero() {
   const [theme, setTheme] = useState("dark");
@@ -26,9 +28,8 @@ export default function Hero() {
   return (
     <section
       data-testid="hero-section"
-      className={`relative pt-32 pb-24 md:pt-36 md:pb-32 ${
-        theme === "light" ? "bg-gradient-to-b from-white to-gray-50" : "aurora-bg"
-      }`}
+      className={`relative pt-24 pb-20 md:pt-28 md:pb-24 ${theme === "light" ? "bg-gradient-to-b from-white to-gray-50" : "aurora-bg"
+        }`}
     >
       {/* Soft color blobs for vibrant light mode background */}
       {theme === "light" && (
@@ -52,17 +53,15 @@ export default function Hero() {
       <div
         data-testid="hero-brand-watermark"
         aria-hidden="true"
-        className={`pointer-events-none select-none absolute inset-x-0 bottom-0 flex items-end justify-center overflow-hidden ${
-          theme === "light" ? "opacity-30" : ""
-        }`}
+        className={`pointer-events-none select-none absolute inset-x-0 bottom-0 flex items-end justify-center overflow-hidden ${theme === "light" ? "opacity-30" : ""
+          }`}
       >
         <span
           className={`font-satoshi font-black tracking-tighter leading-[0.8] whitespace-nowrap
             text-[28vw] md:text-[22vw] lg:text-[19vw]
-            bg-clip-text text-transparent translate-y-[18%] ${
-              theme === "light"
-                ? "bg-[linear-gradient(180deg,rgba(59,130,246,0.15)_0%,rgba(168,85,247,0.12)_45%,rgba(34,211,238,0.08)_80%,transparent_100%)]"
-                : "bg-[linear-gradient(180deg,rgba(96,165,250,0.22)_0%,rgba(192,132,252,0.14)_45%,rgba(34,211,238,0.05)_80%,transparent_100%)]"
+            bg-clip-text text-transparent translate-y-[18%] ${theme === "light"
+              ? "bg-[linear-gradient(180deg,rgba(59,130,246,0.15)_0%,rgba(168,85,247,0.12)_45%,rgba(34,211,238,0.08)_80%,transparent_100%)]"
+              : "bg-[linear-gradient(180deg,rgba(96,165,250,0.22)_0%,rgba(192,132,252,0.14)_45%,rgba(34,211,238,0.05)_80%,transparent_100%)]"
             }`}
           style={{ WebkitTextStroke: theme === "light" ? "1px rgba(0,0,0,0.02)" : "1px rgba(255,255,255,0.04)" }}
         >
@@ -79,11 +78,10 @@ export default function Hero() {
         >
           <div
             data-testid="hero-badge"
-            className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs ${
-              theme === "light"
-                ? "bg-white/70 backdrop-blur-xl border border-white/40 text-gray-600 shadow-lg"
-                : "glass text-zinc-300"
-            }`}
+            className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs ${theme === "light"
+              ? "bg-white/70 backdrop-blur-xl border border-white/40 text-gray-600 shadow-lg"
+              : "glass text-zinc-300"
+              }`}
           >
             <Rocket className={`w-3.5 h-3.5 ${theme === "light" ? "text-teal-600" : "text-teal-300"}`} />
             <span>No More Waiting Lines</span>
@@ -93,9 +91,8 @@ export default function Hero() {
 
           <h1
             data-testid="hero-headline"
-            className={`font-satoshi mt-6 text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-[1.02] ${
-              theme === "light" ? "text-gray-900" : ""
-            }`}
+            className={`font-satoshi mt-6 text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-[1.02] ${theme === "light" ? "text-gray-900" : ""
+              }`}
           >
             Skip the Line.{" "}
             <span data-testid="hero-gradient-text" className="gradient-text">
@@ -105,63 +102,29 @@ export default function Hero() {
 
           <p
             data-testid="hero-subheading"
-            className={`mt-6 text-lg md:text-xl leading-relaxed max-w-xl ${
-              theme === "light" ? "text-gray-700" : "text-zinc-400"
-            }`}
+            className={`mt-6 text-lg md:text-xl leading-relaxed max-w-xl ${theme === "light" ? "text-gray-700" : "text-zinc-400"
+              }`}
           >
             Join queues digitally by scanning a QR code and get real-time
             updates while you do what matters.
           </p>
 
           <div className="mt-9 flex flex-wrap items-center gap-3">
-            <a href="#cta" data-testid="hero-get-started-btn" className={`btn-primary ${
-              theme === "light" ? "shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300" : ""
-            }`}>
+            <a href="#cta" data-testid="hero-get-started-btn" className={`btn-primary ${theme === "light" ? "shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300" : ""
+              }`}>
               Get Started
               <ArrowRight className="w-4 h-4" />
             </a>
-            <button 
-              data-testid="hero-watch-demo-btn" 
-              className={`flex items-center gap-2 rounded-full px-5 py-2.5 transition-all duration-300 ${
-                theme === "light"
-                  ? "bg-white/80 backdrop-blur-md border border-white/40 shadow-md hover:bg-white hover:shadow-lg hover:scale-[1.02] text-gray-900"
-                  : "btn-ghost"
-              }`}
+            <button
+              data-testid="hero-watch-demo-btn"
+              className={`flex items-center gap-2 rounded-full px-5 py-2.5 transition-all duration-300 ${theme === "light"
+                ? "bg-white/80 backdrop-blur-md border border-white/40 shadow-md hover:bg-white hover:shadow-lg hover:scale-[1.02] text-gray-900"
+                : "btn-ghost"
+                }`}
             >
               <Play className="w-4 h-4" fill="currentColor" />
               Watch Demo
             </button>
-          </div>
-
-          <div className="mt-10 flex items-center gap-6 flex-wrap">
-            <div className="flex -space-x-3">
-              {[
-                "https://i.pravatar.cc/48?img=12",
-                "https://i.pravatar.cc/48?img=32",
-                "https://i.pravatar.cc/48?img=45",
-                "https://i.pravatar.cc/48?img=68",
-              ].map((src) => (
-                <img
-                  key={src}
-                  src={src}
-                  alt="user"
-                  className={`w-9 h-9 rounded-full border-2 object-cover ${
-                    theme === "light" ? "border-white" : "border-[#0a0a0f]"
-                  }`}
-                />
-              ))}
-            </div>
-            <div>
-              <div className={`flex items-center gap-1.5 text-sm ${
-                theme === "light" ? "text-amber-500" : "text-amber-300"
-              }`}>
-                {"★★★★★"}
-                <span className={`ml-2 ${theme === "light" ? "text-gray-600" : "text-zinc-400"}`}>4.9 / 5</span>
-              </div>
-              <p className={`text-xs ${theme === "light" ? "text-gray-500" : "text-zinc-500"}`}>
-                Loved by 12,000+ early access customers
-              </p>
-            </div>
           </div>
         </motion.div>
 
@@ -183,109 +146,34 @@ function HeroVisual({ theme }) {
     >
       {/* center phone mock */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className={`relative w-[280px] md:w-[300px] h-[480px] rounded-[38px] p-3 ${
-          theme === "light"
-            ? "bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl"
-            : "glass-strong shadow-[0_40px_90px_rgba(0,0,0,0.6)]"
-        }`}>
-          <div className={`absolute top-3 left-1/2 -translate-x-1/2 w-24 h-5 rounded-full z-10 ${
-            theme === "light"
-              ? "bg-gray-900 border border-gray-300"
-              : "bg-black/80 border border-white/10"
-          }`} />
-          <div className={`w-full h-full rounded-[28px] border overflow-hidden relative ${
-            theme === "light"
-              ? "bg-gradient-to-b from-gray-50 to-white border-gray-200"
-              : "bg-gradient-to-b from-[#0b0b14] to-[#060608] border-white/10"
+        <div className={`relative w-[280px] md:w-[300px] h-[555px] rounded-[38px] p-2 mb-8 overflow-hidden flex items-center justify-center ${theme === "light"
+          ? "bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl"
+          : "glass-strong shadow-[0_40px_90px_rgba(0,0,0,0.6)]"
           }`}>
-            {/* status */}
-            <div className={`px-5 pt-6 flex items-center justify-between text-[10px] font-mono ${
-              theme === "light" ? "text-gray-600" : "text-zinc-400"
-            }`}>
-              <span>9:41</span>
-              <span className="tracking-wider">WAITLESS</span>
-              <span>100%</span>
-            </div>
-
-            {/* queue card */}
-            <div className={`mx-4 mt-6 rounded-2xl p-4 ${
-              theme === "light"
-                ? "bg-gradient-to-br from-blue-100/50 via-purple-100/50 to-teal-100/50 border border-gray-200"
-                : "bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-teal-400/20 border border-white/10"
-            }`}>
-              <p className={`text-[10px] uppercase tracking-[0.2em] ${
-                theme === "light" ? "text-gray-500" : "text-zinc-400"
-              }`}>
-                You're in queue
-              </p>
-              <div className="flex items-end gap-2 mt-2">
-                <span className={`font-satoshi text-5xl font-bold ${
-                  theme === "light" ? "text-gray-900" : "text-white"
-                }`}>#3</span>
-                <span className={`text-xs mb-2 ${
-                  theme === "light" ? "text-gray-500" : "text-zinc-400"
-                }`}>of 12 ahead</span>
-              </div>
-              <div className={`mt-3 h-1.5 w-full rounded-full overflow-hidden ${
-                theme === "light" ? "bg-gray-200" : "bg-white/10"
-              }`}>
-                <div className="h-full w-[70%] bg-gradient-to-r from-blue-400 via-purple-400 to-teal-300 rounded-full" />
-              </div>
-              <p className={`mt-3 text-xs flex items-center gap-1.5 ${
-                theme === "light" ? "text-gray-600" : "text-zinc-300"
-              }`}>
-                <Timer className="w-3 h-3" />
-                Est. wait ~ 5 mins
-              </p>
-            </div>
-
-            {/* list */}
-            <div className="px-4 mt-4 space-y-2">
-              {[
-                { label: "Check-in complete", ok: true },
-                { label: "Live queue position active", ok: true },
-                { label: "Smart alert armed", ok: true },
-              ].map((r) => (
-                <div
-                  key={r.label}
-                  className={`flex items-center gap-2 text-xs rounded-lg px-3 py-2 ${
-                    theme === "light"
-                      ? "text-gray-700 bg-gray-100 border border-gray-200"
-                      : "text-zinc-300 bg-white/[0.03] border border-white/5"
-                  }`}
-                >
-                  <CheckCircle2 className={`w-3.5 h-3.5 ${theme === "light" ? "text-teal-600" : "text-teal-300"}`} />
-                  {r.label}
-                </div>
-              ))}
-            </div>
-
-            {/* glow */}
-            <div className={`absolute -bottom-20 left-1/2 -translate-x-1/2 w-56 h-56 rounded-full blur-3xl pointer-events-none ${
-              theme === "light" ? "bg-blue-400/20" : "bg-purple-500/30"
-            }`} />
-          </div>
+          <img
+            src={theme === "light" ? (clientDashLight.src || clientDashLight) : (clientDashDark.src || clientDashDark)}
+            alt="Client Dashboard"
+            className="w-full h-full object-cover rounded-[30px]"
+          />
         </div>
       </div>
 
       {/* floating card: QR */}
       <motion.div
-        className={`absolute top-4 -left-2 md:left-[-20px] rounded-2xl p-3 w-[160px] float-soft ${
-          theme === "light"
-            ? "bg-white/70 backdrop-blur-xl border border-white/40 shadow-lg hover:shadow-xl transition-all duration-300"
-            : "glass"
-        }`}
+        className={`absolute top-4 -left-2 md:left-[-20px] rounded-2xl p-2 md:p-3 w-[125px] sm:w-[140px] md:w-[160px] float-soft ${theme === "light"
+          ? "bg-white/70 backdrop-blur-xl border border-white/40 shadow-lg hover:shadow-xl transition-all duration-300"
+          : "glass"
+          }`}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
       >
-        <div className={`flex items-center gap-2 text-xs ${
-          theme === "light" ? "text-gray-600" : "text-zinc-300"
-        }`}>
-          <QrCode className={`w-4 h-4 ${theme === "light" ? "text-blue-600" : "text-blue-300"}`} />
-          Scan to join
+        <div className={`flex items-center gap-1.5 md:gap-2 text-[10px] md:text-xs ${theme === "light" ? "text-gray-600" : "text-zinc-300"
+          }`}>
+          <QrCode className={`w-3.5 h-3.5 md:w-4 md:h-4 ${theme === "light" ? "text-blue-600" : "text-blue-300"}`} />
+          <span>Scan to join</span>
         </div>
-        <div className="mt-2 aspect-square bg-white rounded-md p-1.5">
+        <div className="mt-1.5 md:mt-2 aspect-square bg-white rounded-md p-1 md:p-1.5">
           <div
             className="w-full h-full"
             style={{
@@ -295,61 +183,58 @@ function HeroVisual({ theme }) {
             }}
           />
         </div>
-        <p className={`mt-2 text-[10px] font-mono ${theme === "light" ? "text-gray-500" : "text-zinc-500"}`}>#WAITLESS-Q23</p>
+        <p className={`mt-1.5 md:mt-2 text-[9px] md:text-[10px] font-mono ${theme === "light" ? "text-gray-500" : "text-zinc-500"}`}>#WAITLESS-Q23</p>
       </motion.div>
 
       {/* floating card: notification */}
       <motion.div
-        className={`absolute top-14 right-0 md:right-[-10px] rounded-2xl p-3 w-[210px] float-soft-delay ${
-          theme === "light"
-            ? "bg-white/70 backdrop-blur-xl border border-white/40 shadow-lg hover:shadow-xl transition-all duration-300"
-            : "glass"
-        }`}
+        className={`absolute top-14 right-0 md:right-[-10px] rounded-2xl p-2 md:p-3 w-[155px] sm:w-[180px] md:w-[210px] float-soft-delay ${theme === "light"
+          ? "bg-white/70 backdrop-blur-xl border border-white/40 shadow-lg hover:shadow-xl transition-all duration-300"
+          : "glass"
+          }`}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}
       >
-        <div className="flex items-center gap-2">
-          <div className="relative">
+        <div className="flex items-center gap-1.5 md:gap-2">
+          <div className="relative shrink-0">
             <span className="absolute inset-0 rounded-full bg-teal-400/40 pulse-ring" />
-            <div className="relative w-8 h-8 grid place-items-center rounded-full bg-gradient-to-br from-teal-400 to-blue-500">
-              <BellRing className="w-4 h-4 text-white" />
+            <div className="relative w-6 h-6 md:w-8 md:h-8 grid place-items-center rounded-full bg-gradient-to-br from-teal-400 to-blue-500">
+              <BellRing className="w-3 h-3 md:w-4 md:h-4 text-white" />
             </div>
           </div>
           <div>
-            <p className={`text-xs font-medium ${theme === "light" ? "text-gray-900" : ""}`}>You're up next</p>
-            <p className={`text-[10px] ${theme === "light" ? "text-gray-500" : "text-zinc-400"}`}>Counter 4 • 2 min away</p>
+            <p className={`text-[11px] md:text-xs font-medium ${theme === "light" ? "text-gray-900" : ""}`}>You're up next</p>
+            <p className={`text-[9px] md:text-[10px] ${theme === "light" ? "text-gray-500" : "text-zinc-400"}`}>Counter 4 • 2 min away</p>
           </div>
         </div>
       </motion.div>
 
       {/* floating card: eta */}
       <motion.div
-        className={`absolute bottom-6 -left-2 md:left-2 rounded-2xl p-3 w-[200px] float-soft-slow ${
-          theme === "light"
-            ? "bg-white/70 backdrop-blur-xl border border-white/40 shadow-lg hover:shadow-xl transition-all duration-300"
-            : "glass"
-        }`}
+        className={`absolute bottom-6 -left-2 md:left-2 rounded-2xl p-2 md:p-3 w-[150px] sm:w-[170px] md:w-[200px] float-soft-slow ${theme === "light"
+          ? "bg-white/70 backdrop-blur-xl border border-white/40 shadow-lg hover:shadow-xl transition-all duration-300"
+          : "glass"
+          }`}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.9 }}
       >
-        <p className={`text-[10px] uppercase tracking-[0.2em] ${theme === "light" ? "text-gray-500" : "text-zinc-500"}`}>
+        <p className={`text-[9px] md:text-[10px] uppercase tracking-[0.2em] ${theme === "light" ? "text-gray-500" : "text-zinc-500"}`}>
           Live ETA
         </p>
-        <div className="mt-1 flex items-baseline gap-1">
-          <span className={`font-satoshi text-3xl font-bold ${theme === "light" ? "text-gray-900" : ""}`}>05:23</span>
-          <span className={`text-xs ${theme === "light" ? "text-gray-500" : "text-zinc-400"}`}>min</span>
+        <div className="mt-0.5 md:mt-1 flex items-baseline gap-1">
+          <span className={`font-satoshi text-2xl md:text-3xl font-bold ${theme === "light" ? "text-gray-900" : ""}`}>05:23</span>
+          <span className={`text-[10px] md:text-xs ${theme === "light" ? "text-gray-500" : "text-zinc-400"}`}>min</span>
         </div>
-        <div className="mt-2 flex items-center gap-1">
+        <div className="mt-1.5 md:mt-2 flex items-center gap-0.5 md:gap-1">
           {[...Array(10)].map((_, i) => (
             <span
               key={i}
-              className={`h-2 flex-1 rounded-sm ${
-                i < 7
-                  ? "bg-gradient-to-r from-blue-400 to-purple-400"
-                  : theme === "light" ? "bg-gray-200" : "bg-white/10"
-              }`}
+              className={`h-1.5 md:h-2 flex-1 rounded-sm ${i < 7
+                ? "bg-gradient-to-r from-blue-400 to-purple-400"
+                : theme === "light" ? "bg-gray-200" : "bg-white/10"
+                }`}
             />
           ))}
         </div>
@@ -357,20 +242,19 @@ function HeroVisual({ theme }) {
 
       {/* floating card: people served */}
       <motion.div
-        className={`absolute bottom-8 right-0 md:right-[-10px] rounded-2xl p-3 w-[180px] float-soft ${
-          theme === "light"
-            ? "bg-white/70 backdrop-blur-xl border border-white/40 shadow-lg hover:shadow-xl transition-all duration-300"
-            : "glass"
-        }`}
+        className={`absolute bottom-8 right-0 md:right-[-10px] rounded-2xl p-2 md:p-3 w-[135px] sm:w-[155px] md:w-[180px] float-soft ${theme === "light"
+          ? "bg-white/70 backdrop-blur-xl border border-white/40 shadow-lg hover:shadow-xl transition-all duration-300"
+          : "glass"
+          }`}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.1 }}
       >
-        <p className={`text-[10px] uppercase tracking-[0.2em] ${theme === "light" ? "text-gray-500" : "text-zinc-500"}`}>
+        <p className={`text-[9px] md:text-[10px] uppercase tracking-[0.15em] md:tracking-[0.2em] ${theme === "light" ? "text-gray-500" : "text-zinc-500"}`}>
           Time saved today
         </p>
-        <div className={`mt-1 font-satoshi text-2xl font-bold ${theme === "light" ? "text-gray-900" : ""}`}>2h 41m</div>
-        <p className={`text-[10px] ${theme === "light" ? "text-gray-500" : "text-zinc-500"}`}>vs. standing in line</p>
+        <div className={`mt-0.5 md:mt-1 font-satoshi text-xl md:text-2xl font-bold ${theme === "light" ? "text-gray-900" : ""}`}>2h 41m</div>
+        <p className={`text-[9px] md:text-[10px] ${theme === "light" ? "text-gray-500" : "text-zinc-500"}`}>vs. standing in line</p>
       </motion.div>
     </motion.div>
   );

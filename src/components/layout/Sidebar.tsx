@@ -1,10 +1,11 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Home, Users, ClipboardList, LogOut, Zap } from "lucide-react"
+import { Home, Users, ClipboardList, LogOut } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
+import logo1 from "@/assets/logo1.png"
 
 const navItems = [
   { name: "Dashboard", icon: Home, href: "/dashboard" },
@@ -39,15 +40,15 @@ export function Sidebar() {
   }, [])
 
   return (
-    <div className={`w-52 h-full hidden md:flex flex-col border-r shrink-0 transition-colors duration-300 ${
-      isDark ? "bg-[#0d1117] border-white/8" : "bg-gray-100 border-gray-200"
-    }`}>
+    <div className={`w-52 h-full hidden md:flex flex-col border-r shrink-0 transition-colors duration-300 ${isDark ? "bg-[#0d1117] border-white/8" : "bg-gray-100 border-gray-200"
+      }`}>
       {/* Logo */}
-      <div className="p-5 flex items-center gap-2.5">
-        <Zap className="w-7 h-7 text-blue-500 fill-blue-500 drop-shadow-[0_0_10px_rgba(59,130,246,0.7)]" />
-        <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-cyan-400">
-          WaitLess
-        </span>
+      <div className="p-5 flex items-center">
+        <img
+          src={typeof logo1 === "string" ? logo1 : logo1.src}
+          alt="WaitLess"
+          className="h-10 w-auto object-contain scale-[4.0] px-10"
+        />
       </div>
 
       {/* Nav */}
@@ -76,11 +77,10 @@ export function Sidebar() {
 
       {/* User Card */}
       <div className="p-3 mt-auto">
-        <div className={`p-3 rounded-xl border flex flex-col gap-3 transition-colors duration-300 ${
-          isDark 
-            ? "bg-white/[0.04] border-white/8" 
-            : "bg-white border-gray-200 shadow-sm"
-        }`}>
+        <div className={`p-3 rounded-xl border flex flex-col gap-3 transition-colors duration-300 ${isDark
+          ? "bg-white/[0.04] border-white/8"
+          : "bg-white border-gray-200 shadow-sm"
+          }`}>
           <div className="flex items-center gap-2.5">
             {/* Avatar with photo-like gradient */}
             <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-400 via-pink-400 to-orange-300 flex items-center justify-center shrink-0 shadow-lg">
