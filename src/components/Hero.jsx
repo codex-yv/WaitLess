@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Play, ArrowRight, Rocket, BellRing, Timer, QrCode, CheckCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import clientDashLight from "@/assets/promotions/client_dash.png";
 import clientDashDark from "@/assets/promotions/client_dash_dark.png";
 
@@ -110,11 +111,11 @@ export default function Hero() {
           </p>
 
           <div className="mt-9 flex flex-wrap items-center gap-3">
-            <a href="#cta" data-testid="hero-get-started-btn" className={`btn-primary ${theme === "light" ? "shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300" : ""
+            <Link href="/signup" data-testid="hero-get-started-btn" className={`btn-primary ${theme === "light" ? "shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300" : ""
               }`}>
               Get Started
               <ArrowRight className="w-4 h-4" />
-            </a>
+            </Link>
             <button
               data-testid="hero-watch-demo-btn"
               className={`flex items-center gap-2 rounded-full px-5 py-2.5 transition-all duration-300 ${theme === "light"

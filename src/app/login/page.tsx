@@ -635,7 +635,7 @@ function LoginPageContent() {
           >
             Don&apos;t have an account?{" "}
             <Link
-              href="#"
+              href="/signup"
               data-testid="login-create-account-link"
               className="gradient-text font-medium hover:underline decoration-blue-400/50 underline-offset-2"
             >

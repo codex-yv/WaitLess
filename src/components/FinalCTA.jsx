@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Mail, Sparkles } from "lucide-react";
 
@@ -106,8 +107,8 @@ export default function FinalCTA() {
                 <div className="absolute inset-x-0 top-0 h-[2px] rounded-t-2xl bg-gradient-to-r from-white/80 via-gray-200 to-white/80 pointer-events-none" />
               )}
               <div className="mt-10">
-                <a
-                  href="#cta"
+                <Link
+                  href="/signup"
                   className={`inline-flex items-center gap-2 rounded-full w-full justify-center py-3 font-semibold transition-all duration-300 ${theme === "light"
                     ? "bg-gray-900 text-white hover:bg-gray-800 hover:shadow-xl hover:scale-105"
                     : "btn-primary"
@@ -115,17 +116,16 @@ export default function FinalCTA() {
                 >
                   Start Managing Smarter
                   <ArrowRight className="w-4 h-4" />
-                </a>
+                </Link>
               </div>
-              <button
+              <Link
+                href="/login"
                 data-testid="waitlist-submit-btn"
-                type="submit"
-                disabled={loading}
                 className="btn-primary mt-4 w-full justify-center"
               >
-                {loading ? "Joining…" : "Join WaitLess"}
-                {!loading && <ArrowRight className="w-4 h-4" />}
-              </button>
+                Join WaitLess
+                <ArrowRight className="w-4 h-4" />
+              </Link>
               <p className={`mt-3 text-[11px] ${theme === "light" ? "text-gray-500" : "text-zinc-500"}`}>
                 By joining you agree to receive product emails. No spam — ever.
               </p>
