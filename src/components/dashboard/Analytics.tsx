@@ -101,9 +101,9 @@ export function AnalyticsGrid({ dashboardData, loading }: AnalyticsGridProps) {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {/* Completion Rate */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}>
-        <Card 
+        <Card
           className="p-5 flex flex-col justify-between h-full"
-          glowColor="#3b82f6" 
+          glowColor="#3b82f6"
           borderGlow="linear-gradient(135deg, #3b82f620, transparent 70%)"
           lightTint="bg-[linear-gradient(135deg,rgba(59,130,246,0.08),transparent)]"
         >
@@ -125,9 +125,9 @@ export function AnalyticsGrid({ dashboardData, loading }: AnalyticsGridProps) {
 
       {/* Cancel Rate */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}>
-        <Card 
+        <Card
           className="p-5 flex flex-col justify-between h-full"
-          glowColor="#ef4444" 
+          glowColor="#ef4444"
           borderGlow="linear-gradient(135deg, #ef444420, transparent 70%)"
           lightTint="bg-[linear-gradient(135deg,rgba(239,68,68,0.08),transparent)]"
         >
@@ -149,9 +149,9 @@ export function AnalyticsGrid({ dashboardData, loading }: AnalyticsGridProps) {
 
       {/* Avg Wait Time */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }}>
-        <Card 
+        <Card
           className="p-5 flex flex-col justify-between h-full"
-          glowColor="#818cf8" 
+          glowColor="#818cf8"
           borderGlow="linear-gradient(135deg, #818cf820, transparent 70%)"
           lightTint="bg-[linear-gradient(135deg,rgba(129,140,248,0.08),transparent)]"
         >
@@ -166,8 +166,8 @@ export function AnalyticsGrid({ dashboardData, loading }: AnalyticsGridProps) {
               <Clock className="w-8 h-8 text-indigo-400" />
             </div>
             <div>
-              <div className={`text-3xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>8 min</div>
-              <div className={`text-sm ${isDark ? "text-gray-500" : "text-gray-600"}`}>today's average</div>
+              <div className={`text-md ${isDark ? "text-white" : "text-gray-900"}`}>Available Soon</div>
+              {/* <div className={`text-sm ${isDark ? "text-gray-500" : "text-gray-600"}`}>today's average</div> */}
             </div>
           </div>
         </Card>
@@ -175,9 +175,9 @@ export function AnalyticsGrid({ dashboardData, loading }: AnalyticsGridProps) {
 
       {/* Total Revenue */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.7 }}>
-        <Card 
+        <Card
           className="p-5 flex flex-col justify-between h-full"
-          glowColor="#10b981" 
+          glowColor="#10b981"
           borderGlow="linear-gradient(135deg, #10b98120, transparent 70%)"
           lightTint="bg-[linear-gradient(135deg,rgba(16,185,129,0.08),transparent)]"
         >
@@ -192,8 +192,8 @@ export function AnalyticsGrid({ dashboardData, loading }: AnalyticsGridProps) {
               <IndianRupee className="w-8 h-8 text-emerald-400" />
             </div>
             <div>
-              <div className="text-3xl font-bold text-emerald-400 drop-shadow-[0_0_6px_rgba(52,211,153,0.3)]">₹8,450</div>
-              <div className={`text-sm ${isDark ? "text-gray-500" : "text-gray-600"}`}>today</div>
+              <div className="text-md text-emerald-400 drop-shadow-[0_0_6px_rgba(52,211,153,0.3)]">Available Soon</div>
+              {/* <div className={`text-sm ${isDark ? "text-gray-500" : "text-gray-600"}`}>today</div> */}
             </div>
           </div>
         </Card>

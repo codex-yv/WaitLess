@@ -29,12 +29,11 @@ export function Hero() {
   }, [])
 
   return (
-    <div 
-      className={`relative w-full h-[280px] rounded-3xl overflow-hidden mb-8 border transition-colors duration-300 ${
-        isDark 
-          ? "border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.6)]" 
-          : "border-gray-200 shadow-[0_4px_20px_rgba(0,0,0,0.08)]"
-      }`}
+    <div
+      className={`relative w-full h-[280px] rounded-3xl overflow-hidden mb-8 border transition-colors duration-300 ${isDark
+        ? "border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.6)]"
+        : "border-gray-200 shadow-[0_4px_20px_rgba(0,0,0,0.08)]"
+        }`}
       style={{
         backgroundImage: `url(${isDark ? adminDashImage.src : adminDashLightImage.src})`,
         backgroundSize: '100% 100%',
@@ -74,9 +73,8 @@ export function Hero() {
       />
 
       {/* Mid-Layer Ambient Glow for Text Contrast */}
-      <div className={`absolute inset-y-0 left-0 w-3/4 bg-gradient-to-r z-0 pointer-events-none transition-colors duration-300 ${
-        isDark ? "from-[#020617]/80 to-transparent" : "from-white/90 to-transparent"
-      }`} />
+      <div className={`absolute inset-y-0 left-0 w-3/4 bg-gradient-to-r z-0 pointer-events-none transition-colors duration-300 ${isDark ? "from-[#020617]/80 to-transparent" : "from-white/90 to-transparent"
+        }`} />
 
       {/* Content Container */}
       <div className="relative z-10 w-full h-full flex items-center justify-between p-10">
@@ -97,18 +95,15 @@ export function Hero() {
             </p>
 
             {/* Stats Glass Tiles */}
-            <div className="flex flex-wrap gap-4">
-              <div className={`relative group overflow-hidden flex items-center gap-4 backdrop-blur-xl border px-6 py-4 rounded-2xl transition-colors ${
-                isDark 
-                  ? "bg-[#020617]/50 border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_10px_30px_rgba(0,0,0,0.6)] hover:bg-[#020617]/40" 
-                  : "bg-white/75 border-white/70 ring-1 ring-black/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_24px_rgba(0,0,0,0.08)] hover:bg-white/80"
-              }`}>
+            {/* <div className="flex flex-wrap gap-4"> */}
+            {/* <div className={`relative group overflow-hidden flex items-center gap-4 backdrop-blur-xl border px-6 py-4 rounded-2xl transition-colors ${isDark
+                ? "bg-[#020617]/50 border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_10px_30px_rgba(0,0,0,0.6)] hover:bg-[#020617]/40"
+                : "bg-white/75 border-white/70 ring-1 ring-black/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_24px_rgba(0,0,0,0.08)] hover:bg-white/80"
+                }`}>
                 <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
-                {/* Subtle gradient tint for light mode */}
                 {!isDark && (
                   <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(99,102,241,0.06),rgba(168,85,247,0.05),rgba(34,211,238,0.04))] rounded-2xl opacity-100 pointer-events-none" />
                 )}
-                {/* Soft highlight layer for light mode */}
                 {!isDark && (
                   <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.6),transparent,rgba(255,255,255,0.2))] rounded-2xl opacity-40 pointer-events-none" />
                 )}
@@ -121,33 +116,31 @@ export function Hero() {
                   <span className={`text-xs font-medium tracking-wide uppercase ${isDark ? "text-gray-400" : "text-gray-600"}`}>Active now</span>
                   <span className={`text-xl font-extrabold ${isDark ? "text-white" : "text-gray-900"}`}>1</span>
                 </div>
-              </div>
+              </div> */}
 
-              <div className={`relative group overflow-hidden flex items-center gap-4 backdrop-blur-xl border px-6 py-4 rounded-2xl transition-colors ${
-                isDark 
-                  ? "bg-[#020617]/50 border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_10px_30px_rgba(0,0,0,0.6)] hover:bg-[#020617]/40" 
-                  : "bg-white/75 border-white/70 ring-1 ring-black/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_24px_rgba(0,0,0,0.08)] hover:bg-white/80"
-              }`}>
+            {/* <div className={`relative group overflow-hidden flex items-center gap-4 backdrop-blur-xl border px-6 py-4 rounded-2xl transition-colors ${isDark
+                ? "bg-[#020617]/50 border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_10px_30px_rgba(0,0,0,0.6)] hover:bg-[#020617]/40"
+                : "bg-white/75 border-white/70 ring-1 ring-black/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_24px_rgba(0,0,0,0.08)] hover:bg-white/80"
+                }`}>
                 <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
                 <div className="absolute top-0 left-[-150%] w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-45deg] transition-all duration-1000 group-hover:translate-x-[300%] opacity-0 group-hover:opacity-100 ease-in-out pointer-events-none" />
                 <Clock className="w-6 h-6 text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.6)]" />
                 <div className="flex flex-col relative z-10">
                   <span className={`text-xs font-medium tracking-wide uppercase ${isDark ? "text-gray-400" : "text-gray-600"}`}>Avg wait</span>
-                  <span className={`text-xl font-extrabold ${isDark ? "text-white" : "text-gray-900"}`}>8 min</span>
+                  <span className={`text-md font-light ${isDark ? "text-white" : "text-gray-900"}`}>Available Soon</span>
                 </div>
               </div>
 
-              <div className={`relative group overflow-hidden flex items-center gap-4 backdrop-blur-xl border px-6 py-4 rounded-2xl transition-colors ${
-                isDark 
-                  ? "bg-[#020617]/50 border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_10px_30px_rgba(0,0,0,0.6)] hover:bg-[#020617]/40" 
-                  : "bg-white/75 border-white/70 ring-1 ring-black/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_24px_rgba(0,0,0,0.08)] hover:bg-white/80"
-              }`}>
+              <div className={`relative group overflow-hidden flex items-center gap-4 backdrop-blur-xl border px-6 py-4 rounded-2xl transition-colors ${isDark
+                ? "bg-[#020617]/50 border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_10px_30px_rgba(0,0,0,0.6)] hover:bg-[#020617]/40"
+                : "bg-white/75 border-white/70 ring-1 ring-black/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_24px_rgba(0,0,0,0.08)] hover:bg-white/80"
+                }`}>
                 <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
-                {/* Subtle gradient tint for light mode */}
+               
                 {!isDark && (
                   <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(99,102,241,0.06),rgba(168,85,247,0.05),rgba(34,211,238,0.04))] rounded-2xl opacity-100 pointer-events-none" />
                 )}
-                {/* Soft highlight layer for light mode */}
+             
                 {!isDark && (
                   <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.6),transparent,rgba(255,255,255,0.2))] rounded-2xl opacity-40 pointer-events-none" />
                 )}
@@ -158,7 +151,7 @@ export function Hero() {
                   <span className={`text-xl font-extrabold ${isDark ? "text-white" : "text-gray-900"}`}>4</span>
                 </div>
               </div>
-            </div>
+            </div> */}
           </motion.div>
         </div>
       </div>
