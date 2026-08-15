@@ -23,7 +23,7 @@ export const login = async (email, password) => {
         });
 
         const data = await response.json();
-        
+
         // Save token to localStorage if login is successful
         if (data.status && data.access_token) {
             localStorage.setItem('access_token', data.access_token);
@@ -33,7 +33,7 @@ export const login = async (email, password) => {
                 wsManager.connect(data.admin_id);
             }
         }
-        
+
         return data;
     } catch (error) {
         console.error('Login error:', error);
@@ -76,7 +76,7 @@ export const signup = async (name: string, email: string, picture: string, passw
         });
 
         const data = await response.json();
-        
+
         // Save token to localStorage if signup is successful
         if (data.status && data.access_token) {
             localStorage.setItem('access_token', data.access_token);
@@ -114,12 +114,12 @@ export const coordinatorLogin = async (email, token) => {
         });
 
         const data = await response.json();
-        
+
         // Save token to localStorage if coordinator login is successful
         if (data.status && data.access_token) {
             localStorage.setItem('access_token', data.access_token);
         }
-        
+
         return data;
     } catch (error) {
         console.error('Coordinator login error:', error);
@@ -145,7 +145,7 @@ export const googleLogin = async (token) => {
         });
 
         const data = await response.json();
-        
+
         // Save token to localStorage if login is successful
         if (data.status && data.access_token) {
             localStorage.setItem('access_token', data.access_token);
@@ -155,7 +155,7 @@ export const googleLogin = async (token) => {
                 wsManager.connect(data.admin_id);
             }
         }
-        
+
         return data;
     } catch (error) {
         console.error('Google login error:', error);
@@ -170,6 +170,7 @@ export const googleLogin = async (token) => {
  */
 export const googleVerify = async (token) => {
     try {
+        console.log("this is backend url", BACKEND_URL);
         const response = await fetch(`${BACKEND_URL}/${authEndpoints.googleVerify}`, {
             method: 'POST',
             headers: {
