@@ -170,7 +170,7 @@ export const googleLogin = async (token) => {
  */
 export const googleVerify = async (token) => {
     try {
-        console.log("this is backend url", BACKEND_URL);
+        console.log("BACKEND URL IS: ", BACKEND_URL)
         const response = await fetch(`${BACKEND_URL}/${authEndpoints.googleVerify}`, {
             method: 'POST',
             headers: {
