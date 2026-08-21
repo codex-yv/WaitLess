@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="src/assets/logo2.png" alt="WaitLess Logo" width="240" />
+  <img src="src/assets/logoreadme.png" alt="WaitLess Logo" width="240" />
 
   # WaitLess
 
