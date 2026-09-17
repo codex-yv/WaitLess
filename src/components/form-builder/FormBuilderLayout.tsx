@@ -513,6 +513,12 @@ export function FormBuilderLayout() {
               onFormClick={setSelectedForm}
               onPreview={(form) => setSelectedForm(form)}
               onQR={(form) => setQrModalForm(form)}
+              onFormDeleted={(deletedFormId) => {
+                setSavedForms((prev) => prev.filter((f) => f._id !== deletedFormId))
+                if (selectedForm?._id === deletedFormId) {
+                  setSelectedForm(null)
+                }
+              }}
             />
           </div>
 

@@ -22,8 +22,8 @@ export const dasboardAdmin = {
 
 export const adminForm = {
     getForms: 'api/admin/form/',
-    createForm: 'api/admin/form/create-form'
-
+    createForm: 'api/admin/form/create-form',
+    deleteForm: 'api/admin/form/delete-form'
 }
 
 export const adminTrackingEndpoints = {

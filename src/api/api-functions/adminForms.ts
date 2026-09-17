@@ -8,7 +8,7 @@ import { adminForm } from '../apiEndpoints.ts';
 export const getForms = async () => {
     try {
         const token = localStorage.getItem('access_token');
-        
+
         const response = await fetch(`${BACKEND_URL}/${adminForm.getForms}`, {
             method: 'GET',
             headers: {
@@ -36,7 +36,7 @@ export const getForms = async () => {
 export const createForm = async (formParams, title, counter, opensAt, closesAt) => {
     try {
         const token = localStorage.getItem('access_token');
-        
+
         const response = await fetch(`${BACKEND_URL}/${adminForm.createForm}`, {
             method: 'POST',
             headers: {
@@ -59,3 +59,33 @@ export const createForm = async (formParams, title, counter, opensAt, closesAt) 
         throw error;
     }
 };
+
+/**
+ * Delete a form by form_id
+ * @param {string} formId - ID of the form to delete
+ * @returns {Promise<Object>} Response with message, error, and status
+ */
+export const deleteForm = async (formId: string) => {
+    try {
+        const token = localStorage.getItem('access_token');
+
+        const response = await fetch(`${BACKEND_URL}/${adminForm.deleteForm}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                form_id: formId
+            })
+        });
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Delete form error:', error);
+        throw error;
+    }
+};
+
+
