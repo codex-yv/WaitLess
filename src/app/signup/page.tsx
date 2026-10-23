@@ -181,7 +181,7 @@ function SignupPageContent() {
         formData.fullName,
         formData.email,
         googlePicture,
-        isFromGoogle ? "" : formData.password, // password is empty for Google signup
+        formData.password,
         formData.phone,
         formData.occupation,
         formData.orgType,
@@ -489,16 +489,14 @@ function SignupPageContent() {
                     onChange={(e: any) => setFormData({ ...formData, fullName: e.target.value })}
                     isDark={isDark}
                   />
-                  {isFromGoogle && (
-                    <FloatingInput
-                      label="Password"
-                      type="password"
-                      placeholder="Create a password"
-                      value={formData.password}
-                      onChange={(e: any) => setFormData({ ...formData, password: e.target.value })}
-                      isDark={isDark}
-                    />
-                  )}
+                  <FloatingInput
+                    label="Password"
+                    type="password"
+                    placeholder="Create a password"
+                    value={formData.password}
+                    onChange={(e: any) => setFormData({ ...formData, password: e.target.value })}
+                    isDark={isDark}
+                  />
                   <FloatingInput
                     label="Phone Number"
                     type="tel"

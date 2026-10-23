@@ -88,7 +88,7 @@ export function Sidebar() {
             </div>
             <div className="overflow-hidden">
               <p className={`text-xs font-medium truncate ${isDark ? "text-white" : "text-gray-900"}`}>
-                admin@waitless.com
+                admin-waitless
               </p>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.8)] animate-pulse" />
